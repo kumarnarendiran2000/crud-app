@@ -101,4 +101,151 @@ Attach any screenshots or logs showing successful logout behavior.
 
 This format should now be easy to copy and paste into your document. Let me know if you need any modifications! 🚀
 
+Sure! Here's the test evidence report in a plain-text format without tables:
+
+
+---
+
+Test Result Evidence Report
+
+1. Logout Functionality Test Summary
+
+Test Title: Ember & DG Dashboard Logout Behavior
+
+Objective: Validate logout across Ember & DG Dashboards
+
+Tested By: <Tester Name>
+
+Date: <Date>
+
+Environment Tested: <Local / Staging>
+
+Preconditions: Logged in via OpenAM
+
+
+
+---
+
+2. Test Data (If applicable)
+
+OpenAM Login User: <Test User> (Logged in via OpenAM)
+
+Ember/DG Dashboard URLs: <Relevant URLs> (Used for direct access testing)
+
+
+
+---
+
+3. Test Steps
+
+Scenario 1: Logout from Ember → Verify DG Access
+
+Steps:
+
+1. Login via OpenAM and land in Ember.
+
+
+2. Click the Logout button in Ember.
+
+
+3. Manually enter the DG Dashboard URL in the browser and try to access it.
+Expected Result: DG should be logged out and redirect to OpenAM login page or show an error page.
+Actual Result: ✅ Passed
+
+
+
+Scenario 2: Logout from DG → Verify Ember Access
+
+Steps:
+
+1. Login via OpenAM and land in DG.
+
+
+2. Click the Logout button in DG.
+
+
+3. Manually enter the Ember Dashboard URL in the browser and try to access it.
+Expected Result: Ember should be logged out and show an error page.
+Actual Result: ✅ Passed
+
+
+
+Scenario 3: Session Timeout in DG → Verify Ember
+
+Steps:
+
+1. Login via OpenAM and land in DG.
+
+
+2. Stay inactive for 15 minutes in DG.
+
+
+3. Let DG session expire without clicking "Continue" in the timeout popup.
+
+
+4. Try to access Ember via URL.
+Expected Result: Ember should also be logged out. If accessing Ember after DG session expiry, it should show an error page.
+Actual Result: ✅ Passed
+
+
+
+Scenario 4: Session Timeout in DG (Session Extended) → Verify Ember
+
+Steps:
+
+1. Login via OpenAM and land in DG.
+
+
+2. Stay inactive for 15 minutes in DG.
+
+
+3. When the timeout popup appears, click "Continue" to extend the session.
+
+
+4. Try to access Ember via URL.
+Expected Result: If DG session is extended, Ember should still be accessible. No logout should occur in Ember.
+Actual Result: ✅ Passed
+
+
+
+Scenario 5: Ember Timeout Without DG Open
+
+Steps:
+
+1. Login to Ember.
+
+
+2. Do not open DG Dashboard at all.
+
+
+3. Stay inactive for an extended period (since no timeout popup appears in Ember).
+
+
+4. Try navigating within Ember after some time.
+Expected Result: Ember should log out automatically after some time. Trying to access Ember should show an error page.
+Actual Result: ✅ Passed
+
+
+
+
+---
+
+4. Defects (If Any)
+
+No defects found.
+
+
+
+---
+
+5. Screenshots or Logs
+
+Attach any screenshots or logs showing successful logout behavior.
+
+
+
+---
+
+This format is fully copy-paste friendly and maintains clarity while avoiding tables. Let me know if you need any more changes! 🚀
+
 
