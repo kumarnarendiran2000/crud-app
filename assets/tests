@@ -1,0 +1,65 @@
+Since there are multiple scenarios related to logout testing, we can structure the Test Result Evidence Report efficiently without unnecessary repetition.
+
+How to Group Scenarios in the Report?
+
+1. Group all scenarios under a single test section
+
+Since all tests are logout-related, we can have one "Logout Functionality Test Summary" instead of repeating sections for each scenario.
+
+
+
+2. Use a single "Test Steps" table for all scenarios
+
+Add a column for "Scenario Name" so that all steps are listed together while still maintaining clarity.
+
+
+
+3. Defects Section (Even if None Found)
+
+Leave the Defects Section empty or mention "No defects found".
+
+
+
+
+
+---
+
+Updated Structure for the Report
+
+1. Logout Functionality Test Summary
+
+
+---
+
+2. Test Data (If applicable)
+
+
+---
+
+3. Test Steps
+
+
+---
+
+4. Defects (If Any)
+
+
+---
+
+5. Screenshots or Logs
+
+Attach any screenshots or logs showing successful logout behavior.
+
+
+
+---
+
+Why This Structure?
+
+✅ No repetition → We avoid repeating "Test Summary" for each scenario.
+✅ All steps in one table → Makes it easy to track execution.
+✅ Scenarios are clearly separated → Each test step belongs to a scenario for clarity.
+✅ Defects only if needed → If there are no defects, the table remains empty.
+
+Would you like me to generate a formatted Word document with this structure for you? 🚀
+
