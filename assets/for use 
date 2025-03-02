@@ -1,0 +1,31 @@
+import { readFile } from 'fs/promises'; // Use async file reading
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+import { format } from 'date-fns';
+import Reporter from '@wdio/reporter';
+import { addAttachment } from '@wdio/allure-reporter';
+
+export default class ScreenshotReporter extends Reporter {
+  
+  public async onTestFail(test: { title: string }): Promise<void> {
+    await this.saveScreenshot(test.title, 'failure');
+  }
+
+  private async saveScreenshot(testTitle: string, status: 'success' | 'failure'): Promise<void> {
+    if (!testTitle) return;
+
+    const timeStamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+    const safeTestName = testTitle.replace(/\s+/g, '_') || 'untitled-test';
+    const screenshotPath = resolve(`reports/screenshots/${status}/${safeTestName}-${timeStamp}.png`);
+
+    await browser.saveScreenshot(screenshotPath);
+
+    // Ensure the screenshot exists before attaching
+    if (existsSync(screenshotPath)) {
+      const screenshotBuffer = await readFile(screenshotPath);
+      addAttachment('Failure Screenshot', screenshotBuffer, 'image/png');
+    } else {
+      console.warn(`⚠️ Screenshot not found at ${screenshotPath}, skipping attachment.`);
+    }
+  }
+}
