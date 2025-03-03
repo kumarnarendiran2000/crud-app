@@ -249,3 +249,139 @@ Attach any screenshots or logs showing successful logout behavior.
 This format is fully copy-paste friendly and maintains clarity while avoiding tables. Let me know if you need any more changes! 🚀
 
 
+Great! Since Scenario 5 (Ember Timeout Without DG Open) is confirmed as a bug, we will:
+
+1. Create a bug ticket for the issue.
+
+
+2. Update the test report to reflect this defect.
+
+
+3. Refactor Scenario 5 accordingly.
+
+
+
+
+---
+
+Bug Ticket for Scenario 5 (Ember Session Timeout Issue)
+
+Bug Title:
+
+[BUG] Ember Dashboard Does Not Logout After 15 Minutes of Inactivity
+
+Bug Description:
+
+Expected behavior: Ember should automatically log out after 15 minutes of inactivity when DG Dashboard is not opened.
+Actual behavior: The session remains active indefinitely, and Ember does not log out.
+
+Steps to Reproduce:
+
+1. Login via OpenAM and land in Ember Dashboard.
+
+
+2. Ensure DG Dashboard is not opened (only Ember is active).
+
+
+3. Stay inactive for 15+ minutes.
+
+
+4. Try navigating within Ember.
+
+
+
+Expected Result:
+
+Ember should automatically log out after 15 minutes of inactivity.
+
+Accessing Ember after this should redirect to OpenAM login or show an error page.
+
+
+Actual Result:
+
+Ember remains active indefinitely even after 15 minutes.
+
+No timeout or forced logout occurs.
+
+
+Environment:
+
+Tested On: <Local/Staging>
+
+Browser: <Chrome/Edge>
+
+User Role: <Test User>
+
+
+Attachments:
+
+Screenshots or logs (if applicable)
+
+Network requests showing session behavior
+
+
+Priority:
+
+<Medium/High> (Based on impact)
+
+
+
+---
+
+Updated Test Report (Scenario 5 with Defect Reference)
+
+Refactored Scenario 5: Ember Timeout Without DG Open (Bug Identified)
+
+Steps:
+
+1. Login to Ember.
+
+
+2. Do not open DG Dashboard at all.
+
+
+3. Stay inactive for an extended period (expected timeout: 15 mins).
+
+
+4. Try navigating within Ember.
+
+
+
+Expected Result:
+
+Ember should log out automatically after 15 minutes.
+
+Accessing Ember should redirect to OpenAM login or show an error page.
+
+
+Actual Result:
+
+BUG: Ember does not log out after 15 minutes of inactivity.
+
+
+Defect Link: [JIRA Ticket <JIRA-XYZ>]
+
+
+---
+
+Defects Section in Test Report
+
+
+---
+
+Next Steps:
+
+1. Log this bug ticket in Jira with the details above.
+
+
+2. Update the test report with the Jira reference.
+
+
+3. Monitor if the issue gets fixed in the next release.
+
+
+
+Let me know if you need any modifications before logging this in Jira! 🚀
+
+
+
