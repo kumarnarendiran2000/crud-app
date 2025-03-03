@@ -1,0 +1,71 @@
+Ember 🔥 Deployment Process Testing
+
+Test Result Evidence Report
+
+
+---
+
+Scenario 1: CD Package & Stage Deployment Pipeline
+
+1. Test Summary
+
+Test Title: CD Package & Stage Deployment
+Objective: Ensure that the versioning and packaging process is working as expected.
+Tested By: <Tester Name>
+Date: <Date>
+Environment Tested: <Staging / Live>
+Preconditions (if any): CI/CD pipeline should be configured and accessible.
+
+
+---
+
+2. Test Steps
+
+
+---
+
+3. Defects (if any)
+
+
+---
+
+4. Screenshots or Logs
+
+Attach pipeline execution logs and screenshots of S3 version uploads.
+
+
+---
+
+Scenario 2: CD Make Live Deployment Pipeline
+
+1. Test Summary
+
+Test Title: CD Make Live Deployment
+Objective: Ensure that the correct versions are deployed in staging and live environments.
+Tested By: <Tester Name>
+Date: <Date>
+Environment Tested: <Staging / Live>
+Preconditions (if any): CI/CD pipeline should be configured and accessible.
+
+
+---
+
+2. Test Steps
+
+
+---
+
+3. Defects (if any)
+
+
+---
+
+4. Screenshots or Logs
+
+Attach pipeline execution logs, CloudFront validation screenshots, and Lambda alias update confirmations.
+
+
+---
+
+End of Report
+
