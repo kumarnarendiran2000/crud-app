@@ -69,3 +69,198 @@ Attach pipeline execution logs, CloudFront validation screenshots, and Lambda al
 
 End of Report
 
+Ember 🔥 Deployment Process Testing
+
+Test Result Evidence Report
+
+
+---
+
+Scenario 1: CD Package & Stage Deployment Pipeline
+
+1. Test Summary
+
+Test Title: CD Package & Stage Deployment
+
+Objective: Ensure that the versioning and packaging process is working as expected.
+
+Tested By: <Tester Name>
+
+Date: <Date>
+
+Environment Tested: <Staging / Live>
+
+Preconditions (if any): CI/CD pipeline should be configured and accessible.
+
+
+
+---
+
+2. Test Steps
+
+1. Trigger the CD Package & Stage Deployment pipeline with the chosen branch.
+
+Expected Result: Pipeline should start successfully.
+
+
+
+2. Verify if a new version tag is created.
+
+Expected Result: New version tag should be generated.
+
+
+
+3. Ensure the job is successful in uploading versions to S3 buckets.
+
+Expected Result: Artifacts should be present in respective buckets.
+
+
+
+4. Open S3 Bucket <Bucket Name 1> and check the new version.
+
+Expected Result: Version should be present.
+
+
+
+5. Open S3 Bucket <Bucket Name 2> and check the new version.
+
+Expected Result: Version should be present.
+
+
+
+6. Open S3 Bucket <Bucket Name 3> and check the new version.
+
+Expected Result: Version should be present.
+
+
+
+
+
+---
+
+3. Defects (if any)
+
+1. Defect Summary: <Defect Description>
+
+JIRA Ticket/Link: <JIRA Link>
+
+
+
+
+If no defects found, state: No defects identified.
+
+
+---
+
+4. Screenshots or Logs
+
+Attach pipeline execution logs and screenshots of S3 version uploads.
+
+
+---
+
+Scenario 2: CD Make Live Deployment Pipeline
+
+1. Test Summary
+
+Test Title: CD Make Live Deployment
+
+Objective: Ensure that the correct versions are deployed in staging and live environments.
+
+Tested By: <Tester Name>
+
+Date: <Date>
+
+Environment Tested: <Staging / Live>
+
+Preconditions (if any): CI/CD pipeline should be configured and accessible.
+
+
+
+---
+
+2. Test Steps
+
+1. Trigger the CD Make Live pipeline with Dashboard selected for the chosen environment and version.
+
+Expected Result: Pipeline should start successfully.
+
+
+
+2. Verify deployment by navigating to CloudFront (for live environment).
+
+Expected Result: CloudFront should serve the updated version.
+
+
+
+3. Repeat the verification in the staging environment.
+
+Expected Result: CloudFront should reflect staging changes.
+
+
+
+4. Trigger the CD Make Live pipeline with API Backend selected for the chosen environment and version.
+
+Expected Result: Pipeline should start successfully.
+
+
+
+5. Verify deployment by navigating to Lambda function and checking alias (for live environment).
+
+Expected Result: Alias should point to the new version.
+
+
+
+6. Repeat the verification in the staging environment.
+
+Expected Result: Lambda alias should be updated.
+
+
+
+7. Trigger the CD Make Live pipeline with Edge Lambda selected for the chosen environment and version.
+
+Expected Result: Pipeline should start successfully.
+
+
+
+8. Verify deployment by navigating to Lambda function alias (for live environment).
+
+Expected Result: Alias should point to the new version.
+
+
+
+9. Repeat the verification in the staging environment.
+
+Expected Result: Lambda alias should be updated.
+
+
+
+
+
+---
+
+3. Defects (if any)
+
+1. Defect Summary: <Defect Description>
+
+JIRA Ticket/Link: <JIRA Link>
+
+
+
+
+If no defects found, state: No defects identified.
+
+
+---
+
+4. Screenshots or Logs
+
+Attach pipeline execution logs, CloudFront validation screenshots, and Lambda alias update confirmations.
+
+
+---
+
+End of Report
+
+
+
