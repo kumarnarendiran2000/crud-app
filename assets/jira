@@ -1,0 +1,27 @@
+JIRA Ticket for Independent Job Execution in GitHub Actions Pipeline
+
+Title: Prevent Job Cancellation in Subgroups of GitHub Actions Workflow
+
+Description:
+Currently, in our GitHub Actions pipeline, when one job inside a subgroup (dev, POC, pre-prod) fails, the other jobs in that subgroup get canceled abruptly, even if they are still running. This prevents a full execution report of all jobs.
+
+We need to ensure that:
+✅ Each job inside dev, POC, pre-prod runs independently.
+✅ If one job fails, the others continue running and report pass/fail separately.
+✅ The pipeline does NOT stop execution for the entire subgroup due to a single failure.
+
+Proposed Fix:
+Modify each matrix-based job (upload-and-deploy-api, upload-and-deploy-dashboard, upload-and-deploy-edge-lambda) by adding:
+
+strategy:
+  fail-fast: false  # Ensures jobs in the same subgroup run independently
+
+This will allow each job to complete its execution and properly log failures without canceling others.
+
+Priority: Medium
+Impact: Ensures accurate deployment reporting and prevents unnecessary job cancellations.
+Affected Workflow: cd-package-and-stage-code.yml
+Assignee: [Assign to appropriate team member]
+
+Let me know if you need any modifications! 🚀
+
