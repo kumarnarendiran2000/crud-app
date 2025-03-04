@@ -214,3 +214,39 @@ No need to open it manually on the server.
 This perfectly balances automation, maintainability, and flexibility! 🚀
 Let me know if you need any refinements!
 
+
+Yes! Here's a refined version of your comment with a better flow while keeping it clear and professional:
+
+
+---
+
+Code Review Comment:
+
+"Initially, I tried to fix the security vulnerability flagged by CodeQL by executing the Allure report generation script without shell: true, but after multiple attempts, it wasn’t possible to execute it directly.
+
+Instead of forcing a workaround, I made the following changes:
+1️⃣ Removed direct execution of the report generation command in wdio.conf.ts.
+2️⃣ Added logs to guide developers on how to generate and open the Allure report manually (pnpm run generate-allure-report and pnpm run open-allure-report).
+3️⃣ Created dedicated scripts in package.json to properly handle report generation.
+4️⃣ Updated the CI pipeline to call the report generation script before uploading it as an artifact.
+
+This approach ensures security best practices, keeps the process structured, and maintains automation where needed. Let me know if you have any feedback!"
+
+
+---
+
+✅ Why This Works?
+
+Starts with the challenge faced → "Initially, I tried to fix..."
+
+Explains the failed approach concisely → "It wasn’t possible to execute it directly."
+
+Clearly lists the structured changes made.
+
+Ends professionally with an invitation for feedback.
+
+
+This keeps it natural, clear, and review-friendly! 🚀 Let me know if you'd like any tweaks.
+
+
+
