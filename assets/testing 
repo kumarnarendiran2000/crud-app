@@ -77,3 +77,140 @@ npm run generate-allure-report
 
 This keeps things clean, structured, and easily maintainable! 🚀 Let me know if you need any tweaks.
 
+
+That sounds like a clean and structured approach! 🚀
+
+Here’s the final implementation plan based on your idea:
+
+
+---
+
+1️⃣ Update wdio.conf.ts (Logging Instructions Instead of Running the Script)
+
+Modify your onComplete function to just log the next steps instead of executing the script.
+
+import debug from 'debug';
+
+const log = debug('wdio');
+
+export const config: WebdriverIO.Config = {
+  onComplete() {
+    log('✅ All tests are completed!');
+
+    log('ℹ️ To generate the Allure report, run:');
+    log('   👉 pnpm run generate-allure-report');
+
+    log('ℹ️ To open the Allure report manually, run:');
+    log('   👉 pnpm run open-allure-report');
+  }
+};
+
+✅ Why This Works?
+
+No more executing commands in wdio.conf.ts—just logging what needs to be done.
+
+Keeps test execution clean and modular.
+
+Helps developers know what to do next without forcing unnecessary actions.
+
+
+
+---
+
+2️⃣ Update package.json with Allure Scripts
+
+Ensure you have these scripts in package.json:
+
+"scripts": {
+  "generate-allure-report": "npx allure generate --single-file --clean -o reports/allure-report reports/allure/allure-results",
+  "open-allure-report": "npx allure open reports/allure-report"
+}
+
+✅ Why This Works?
+
+Keeps CI/CD and local workflows consistent.
+
+No need for hardcoded shell commands in config files.
+
+Easy for developers to manually generate or view reports.
+
+
+
+---
+
+3️⃣ Modify CI/CD Pipeline to Trigger Allure Report Generation
+
+Add a dedicated step in your CI/CD pipeline to run the report generation script.
+
+📌 Example GitHub Actions Step
+
+- name: Generate Allure Report
+  run: pnpm run generate-allure-report
+
+📌 Example GitLab CI Step
+
+generate_allure_report:
+  script:
+    - pnpm run generate-allure-report
+
+✅ Why This Works?
+
+The pipeline will only generate the report when needed.
+
+Developers don’t have to manually trigger it unless required.
+
+The report will be generated and stored as an artifact.
+
+
+
+---
+
+4️⃣ Modify Pipeline to Upload Allure Report as an Artifact
+
+Ensure the Allure report is uploaded as an artifact so it can be accessed later.
+
+📌 GitHub Actions Example
+
+- name: Upload Allure Report
+  uses: actions/upload-artifact@v4
+  with:
+    name: allure-report
+    path: reports/allure-report
+
+📌 GitLab CI Example
+
+artifacts:
+  paths:
+    - reports/allure-report
+  expire_in: 7 days  # Keep artifacts for 7 days
+
+✅ Why This Works?
+
+The report will be saved and accessible after the pipeline completes.
+
+No need to open it manually on the server.
+
+
+
+---
+
+🚀 Final Workflow Overview
+
+1️⃣ Tests complete → WebdriverIO logs instructions to generate/view the report.
+2️⃣ In CI/CD → The pipeline runs pnpm run generate-allure-report.
+3️⃣ Report is stored as an artifact (can be downloaded anytime).
+4️⃣ Developers can manually open the report using pnpm run open-allure-report if needed.
+
+
+---
+
+📌 Why This is the Best Approach?
+
+✅ Keeps test execution lightweight → No unnecessary commands in wdio.conf.ts.
+✅ Makes Allure report optional for local runs → Only generate it when needed.
+✅ CI/CD automation → Ensures reports are always available as artifacts.
+✅ Improves maintainability → No hardcoded shell commands in test configs.
+
+This perfectly balances automation, maintainability, and flexibility! 🚀
+Let me know if you need any refinements!
+
