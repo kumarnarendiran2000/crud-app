@@ -1,0 +1,148 @@
+Yes, that works perfectly. The focus of this Test Evidence Report will be on switching between versions efficiently rather than capturing the packaging process. The key points will be:
+
+Triggering the CD Make Live Pipeline for different versions.
+
+Ensuring the switch happens within 20 seconds.
+
+Verifying CloudFront, Edge Lambda, and API Backend Lambda alias updates.
+
+Checking the frontend for visible differences to confirm the version switch.
+
+
+I'll now generate the Test Result Evidence Report in text format for this "Test switch between versions" scenario.
+
+
+---
+
+Ember 🔥 Version Switch Testing
+
+Test Result Evidence Report
+
+
+---
+
+1. Test Summary
+
+Test Title: Test Switch Between Versions
+
+Objective: Validate the process of switching between two application versions efficiently.
+
+Tested By: <Tester Name>
+
+Date: <Date>
+
+Environment Tested: <Staging / Live>
+
+Preconditions (if any):
+
+Two versions should already be packaged.
+
+CD pipeline should be configured and accessible.
+
+The frontend should have a visible change between the versions for easy validation.
+
+
+
+
+---
+
+2. Test Steps
+
+1. Trigger the CD Make Live pipeline with Version 1 for the chosen environment.
+
+Expected Result: Pipeline should start successfully, and Version 1 should be deployed.
+
+
+
+2. Verify CloudFront is serving Version 1.
+
+Expected Result: CloudFront should reflect Version 1 correctly.
+
+
+
+3. Verify Lambda Edge and API Backend Lambda are pointing to Version 1 alias.
+
+Expected Result: The alias should be updated to Version 1.
+
+
+
+4. Check the frontend UI to confirm Version 1 is active.
+
+Expected Result: The UI should reflect the changes from Version 1.
+
+
+
+5. Trigger the CD Make Live pipeline with Version 2 for the chosen environment.
+
+Expected Result: Pipeline should start successfully, and Version 2 should be deployed.
+
+
+
+6. Verify CloudFront is serving Version 2.
+
+Expected Result: CloudFront should reflect Version 2 correctly.
+
+
+
+7. Verify Lambda Edge and API Backend Lambda are pointing to Version 2 alias.
+
+Expected Result: The alias should be updated to Version 2.
+
+
+
+8. Check the frontend UI to confirm Version 2 is active.
+
+Expected Result: The UI should reflect the changes from Version 2.
+
+
+
+9. Measure the time taken for the version switch (should be within 20 seconds).
+
+Expected Result: The switch should happen within the expected time frame.
+
+
+
+10. Repeat the version switch back to Version 1 to verify rollback capability.
+
+
+
+Expected Result: CloudFront, Lambda Edge, and API Backend should return to Version 1 successfully.
+
+
+
+---
+
+3. Defects (if any)
+
+1. Defect Summary: <Defect Description>
+
+JIRA Ticket/Link: <JIRA Link>
+
+
+
+
+If no defects found, state: No defects identified.
+
+
+---
+
+4. Screenshots or Logs
+
+Attach logs showing:
+
+CloudFront version updates
+
+Lambda alias changes
+
+Frontend differences between versions
+
+Time measurement for switching versions
+
+
+
+---
+
+End of Report
+
+This structure ensures that we focus purely on the version switching process, validate the speed, and confirm that the correct versions are served. Let me know if you need any changes! 🚀
+
