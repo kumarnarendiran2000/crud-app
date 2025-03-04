@@ -1,0 +1,18 @@
+import { execFileSync } from 'child_process';
+
+export const config: WebdriverIO.Config = {
+  onComplete() {
+    console.log('✅ All tests completed! Generating Allure report...');
+
+    try {
+      // Run the new package.json script instead of manually calling execFileSync
+      execFileSync('npm', ['run', 'generate-allure-report'], { stdio: 'inherit' });
+
+      console.log('✅ Allure report generated. You can open it manually with:');
+      console.log('👉 npm run open-allure-report');
+
+    } catch (error) {
+      console.error('❌ Error generating Allure report:', error);
+    }
+  }
+};
