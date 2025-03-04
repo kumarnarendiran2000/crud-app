@@ -1,3 +1,23 @@
+That’s a great idea! Moving the Allure report generation and opening logic to a dedicated script in package.json keeps your WebdriverIO config cleaner, more maintainable, and reusable across CI/CD and local runs. 🚀
+
+
+---
+
+✅ Steps to Implement This Clean Approach
+
+1️⃣ Modify package.json to Add Scripts
+
+Add these scripts inside "scripts" in package.json:
+
+"scripts": {
+  "generate-allure-report": "npx allure generate --single-file --clean -o reports/allure-report reports/allure/allure-results",
+  "open-allure-report": "npx allure open reports/allure-report"
+}
+
+2️⃣ Modify wdio.conf.ts
+
+Now, in wdio.conf.ts, replace the execFileSync calls with this:
+
 import { execFileSync } from 'child_process';
 
 export const config: WebdriverIO.Config = {
@@ -16,3 +36,44 @@ export const config: WebdriverIO.Config = {
     }
   }
 };
+
+
+---
+
+🔹 Why This Approach is Better?
+
+✔ Keeps wdio.conf.ts cleaner – No need for inline shell commands.
+✔ Easier to maintain – Scripts are reusable in CI/CD and local environments.
+✔ Improves CI/CD flexibility – CI can generate the report but not force-open it, letting developers open it if needed.
+✔ Avoids OS-specific logic (cmd start, open, xdg-open) – Instead, users run npm run open-allure-report themselves.
+
+
+---
+
+🚀 Next Steps
+
+1️⃣ Update package.json with the new scripts.
+2️⃣ Modify wdio.conf.ts to use execFileSync('npm', ['run', 'generate-allure-report']).
+3️⃣ Run your tests and confirm:
+
+npm run test:e2e
+
+4️⃣ After test completion, manually open the report with:
+
+npm run open-allure-report
+
+5️⃣ For CI/CD Pipelines – Just use:
+
+npm run generate-allure-report
+
+
+---
+
+📌 Summary
+
+✅ Removed inline shell commands from wdio.conf.ts.
+✅ Delegated report generation & opening to package.json scripts.
+✅ CI/CD now only generates the report, and users can open it manually.
+
+This keeps things clean, structured, and easily maintainable! 🚀 Let me know if you need any tweaks.
+
