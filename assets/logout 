@@ -1,0 +1,8 @@
+Comment:
+
+Testing completed, and the test evidence report is attached. Moving this ticket to QA.
+
+Found an issue: Ember does not log out after 15 minutes of inactivity. Logged this as a separate bug ticket [JIRA-XYZ].
+
+Let me know if any further updates are needed.
+
