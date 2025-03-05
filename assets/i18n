@@ -1,0 +1,87 @@
+🛠️ Ember Dashboard - Internationalization (i18n) Test Report
+
+1. Test Summary
+
+Test Title: Internationalization Validation for Ember Dashboard
+Objective: Ensure that the figures, dates, currency, and number formats remain consistent across different system/browser locales, adhering to the GB (UK) format.
+Tested By: <Tester Name>
+Date: <Test Date>
+Environment Tested:
+
+System Locale Variations (UK, US, France, Germany)
+
+Browser Locale Changes (Chrome, Firefox)
+Preconditions:
+
+System locale must be changed before testing
+
+Browser language settings adjusted
+
+
+
+---
+
+2. Test Data (if applicable)
+
+Input Field: System Locale
+Test Data Value: UK, US, France, Germany
+Notes: Ensure locale setting is changed before testing
+
+Input Field: Browser Language
+Test Data Value: English (GB), English (US), French, German
+Notes: Set language in browser settings and restart browser
+
+Input Field: Date Format
+Test Data Value: DD/MM/YYYY (UK)
+Notes: Verify it remains consistent
+
+Input Field: Currency Format
+Test Data Value: £1,234.56 (UK)
+Notes: Ensure GBP format is displayed correctly
+
+
+---
+
+3. Test Steps & Expected vs. Actual Results
+
+Step 1: Change system locale to different regions (US, Germany, France)
+Expected vs. Actual Results: The displayed content should remain in GB format (e.g., DD/MM/YYYY for dates, £ for currency).
+
+Step 2: Change browser language settings and refresh the dashboard
+Expected vs. Actual Results: Content should not change based on the browser language settings.
+
+Step 3: Verify the date format in transaction history
+Expected vs. Actual Results: Dates should remain in DD/MM/YYYY format.
+
+Step 4: Verify pension values in different locales
+Expected vs. Actual Results: Currency format should always use GBP (£1,234.56).
+
+Step 5: Check UI layout and consistency
+Expected vs. Actual Results: No misalignment or text breaking due to locale changes.
+
+Step 6: Inspect API response for data consistency
+Expected vs. Actual Results: Returned values should be identical across locales.
+
+
+---
+
+4. Defects Identified (if any)
+
+Defect 1: Currency format changes to € (Euro) in the French locale
+JIRA Ticket/Link: EMBER-XXX
+
+Defect 2: Date format changes to MM/DD/YYYY in the US locale
+JIRA Ticket/Link: EMBER-YYY
+
+
+---
+
+5. Screenshots or Logs
+
+Attach relevant screenshots or logs for reference.
+
+
+---
+
+This report ensures that the Ember Dashboard remains consistent for all users regardless of locale settings. Let me know if you need any modifications!
+
