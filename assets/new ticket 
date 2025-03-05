@@ -1,0 +1,70 @@
+JIRA Ticket for CD Package & Stage Pipeline Issue
+
+
+---
+
+Project: Ember 🚀
+Issue Type: Bug 🐛
+Summary: CD Package & Stage Code Pipeline is Not Deploying to Staging
+Description:
+
+The CD Package & Stage Code Pipeline is expected to deploy the packaged version to the Staging environment after generating a new version. However, currently:
+
+The pipeline only packages the code and uploads it to S3 if a new version is detected.
+
+It does not automatically deploy the version to Staging.
+
+As a result, the Staging environment does not reflect the latest packaged version unless a separate deployment pipeline is run.
+
+
+This is inconsistent with expectations and needs correction to ensure new versions are automatically deployed to Staging once packaged.
+
+Steps to Reproduce:
+
+1. Trigger the CD Package & Stage Code Pipeline with changes in the code.
+
+
+2. Observe that a new version tag is created (if changes exist).
+
+
+3. Check the S3 bucket to confirm the new version was uploaded.
+
+
+4. Navigate to Staging environment and verify that the latest version is not deployed automatically.
+
+
+
+Expected Result:
+
+The Staging environment should be updated with the latest packaged version immediately after the pipeline runs.
+
+
+Actual Result:
+
+The pipeline only packages and uploads to S3 but does not deploy to Staging.
+
+
+Severity: Medium 🟠
+Impact: Staging does not get automatically updated, leading to manual deployment steps and potential delays in testing.
+
+Suggested Fix:
+
+Modify the CD Package & Stage Code Pipeline to automatically trigger a deployment to Staging after packaging and uploading the new version.
+
+Ensure the correct version is deployed using the version tag uploaded to S3.
+
+
+Attachments:
+
+Pipeline execution logs
+
+Screenshot of S3 upload with version tag
+
+Screenshot of Staging environment not reflecting the latest version
+
+
+
+---
+
+This JIRA ticket should be logged as a bug since the expected behavior is not happening as intended. Let me know if you need any modifications before submitting it! 🚀
+
