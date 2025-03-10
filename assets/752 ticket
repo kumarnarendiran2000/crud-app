@@ -1,0 +1,86 @@
+To expose this getCsrfToken function in your Hono.js backend and make it accessible via Insomnia (or any API client), follow these steps:
+
+
+---
+
+1️⃣ Create a Hono Route
+
+In your Hono.js backend, define a new route to expose the getCsrfToken function.
+
+Example: routes/csrf.ts
+
+import { Hono } from 'hono';
+import { getCsrfToken } from '../services/wrappers/csrfToken';
+import axios from 'axios';
+
+const csrfRouter = new Hono();
+
+// Create an Axios instance (modify the base URL if needed)
+const slaAxios = axios.create({
+  baseURL: process.env.API_BASE_URL,  // Set this in your environment variables
+  withCredentials: true,
+});
+
+csrfRouter.get('/csrf-token', async (c) => {
+  try {
+    const csrfToken = await getCsrfToken(slaAxios);
+    return c.json({ csrfToken });
+  } catch (error) {
+    console.error('CSRF Token Fetch Error:', error);
+    return c.json({ error: 'Failed to fetch CSRF token' }, 500);
+  }
+});
+
+export default csrfRouter;
+
+
+---
+
+2️⃣ Register the Route in app.ts (Main Hono File)
+
+Now, import and use this route inside your main Hono app file (app.ts or server.ts).
+
+Example: app.ts
+
+import { Hono } from 'hono';
+import csrfRouter from './routes/csrf';
+
+const app = new Hono();
+
+// Register CSRF route
+app.route('/api', csrfRouter); // The full route will be `/api/csrf-token`
+
+export default app;
+
+
+---
+
+3️⃣ Test the API in Insomnia
+
+Now, you can test the API in Insomnia (or Postman) by sending a GET request to:
+
+http://localhost:3000/api/csrf-token
+
+Expected Response:
+
+{
+  "csrfToken": "your-csrf-token-value"
+}
+
+
+---
+
+4️⃣ Start Your Hono Server
+
+Run your Hono backend:
+
+npx hono dev app.ts
+
+Or if using Node.js:
+
+node app.js
+
+Now your CSRF token API is live, and you can call it from Insomnia!
+
+Let me know if you need any tweaks! 🚀
+
