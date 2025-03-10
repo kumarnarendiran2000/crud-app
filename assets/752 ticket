@@ -425,5 +425,127 @@ route.get('/csrf-token', async (c) => {
 Now, the CSRF token is correctly generated, stored, and passed in every request, ensuring smooth authentication and logout! 🚀 Let me know if you need any further refinements. 😊
 
 
+✅ Updated Code: Extract CSRF Cookie from Backend Response and Set It in Browser
+
+This update ensures that:
+
+1. CSRF Cookie is extracted from the Set-Cookie response header.
+
+
+2. CSRF Cookie is correctly forwarded to the browser.
+
+
+3. Existing cookies are preserved.
+
+
+4. CSRF Token is returned for frontend use.
+
+
+
+
+---
+
+🔍 Updated getCsrfToken.ts
+
+✅ Extracts Set-Cookie from the backend response.
+
+✅ Parses and retrieves the CSRF cookie.
+
+✅ Returns both CSRF token and CSRF cookie.
+
+
+import type { AxiosInstance } from 'axios';
+import { constructCookieString } from '../utils/cookie-utils';
+import { Xray } from '../utils/xray';
+
+export async function getCsrfToken(slaAxios: AxiosInstance, cookies: string) {
+  const csrfTokenApiEndpoint = '/secure/customer-platform/rest/api/csrfToken';
+
+  const subSegment = Xray.addNewSubSegment(`Call to ${csrfTokenApiEndpoint}`);
+
+  try {
+    const response = await slaAxios.get(csrfTokenApiEndpoint, {
+      headers: {
+        Cookie: cookies, // ✅ Pass existing cookies
+        Accept: 'application/json',
+      },
+      withCredentials: true, // ✅ Ensure cookies are sent and received
+    });
+
+    console.log('🔍 Response Headers:', response.headers);
+
+    // ✅ Extract CSRF token from response body
+    const csrfToken = response.data;
+
+    // ✅ Extract CSRF Cookie from Set-Cookie header
+    const setCookieHeader = response.headers['set-cookie'];
+    const csrfCookie = setCookieHeader?.find((cookie) => cookie.startsWith('CSRF='))?.split(';')[0]?.split('=')[1] || '';
+
+    console.log('✅ Extracted CSRF Cookie:', csrfCookie);
+
+    return { csrfToken, csrfCookie };
+  } catch (error) {
+    Xray.addError(subSegment, error);
+    throw error;
+  } finally {
+    Xray.closeSubSegment(subSegment);
+  }
+}
+
+
+---
+
+🔍 Updated Hono Route (csrf.ts)
+
+✅ Grabs the CSRF Cookie from the backend response.
+
+✅ Forwards it to the browser using Set-Cookie.
+
+✅ Returns the CSRF token to the frontend.
+
+
+route.get('/csrf-token', async (c) => {
+  try {
+    const slaAxios = c.var.axiosInstances.slaAxios;
+
+    // ✅ Fetch CSRF token & CSRF cookie from backend
+    const { csrfToken, csrfCookie } = await getCsrfToken(slaAxios, c.req.header('cookie') || '');
+
+    // ✅ Forward CSRF Cookie to browser
+    if (csrfCookie) {
+      c.header('Set-Cookie', `CSRF=${csrfCookie}; Path=/; HttpOnly; Secure; SameSite=Strict`);
+    }
+
+    // ✅ Return CSRF token for frontend use
+    return c.json({ csrfToken });
+  } catch (error) {
+    console.error('🚨 CSRF Token Fetch Error:', error);
+    return c.json({ error: 'Failed to fetch CSRF token' }, 500);
+  }
+});
+
+
+---
+
+🚀 Final Fix Plan
+
+1. ✅ Extract Set-Cookie from the backend response.
+
+
+2. ✅ Parse and retrieve the CSRF Cookie.
+
+
+3. ✅ Forward Set-Cookie to the browser using Hono.
+
+
+4. ✅ Ensure withCredentials: true in frontend Axios requests.
+
+
+
+Now, the CSRF cookie will be correctly stored in the browser, and the frontend will have the CSRF token for API requests. 🚀 Let me know if you need any more tweaks! 😊
+
+
+
+
 
 
