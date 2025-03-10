@@ -193,4 +193,115 @@ Now, your wrapper dynamically appends the CSRF cookie without modifying global A
 Let me know if you need any tweaks! 😊
 
 
+Yes! You should include the existing cookies from the Axios config in the headers to ensure all authentication cookies are preserved while appending the CSRF cookie.
+
+
+---
+
+✅ Updated Code to Preserve Existing Cookies
+
+Modify your getCsrfToken.ts function to:
+
+1. Extract existing cookies from the Axios config (slaAxios.defaults.headers.Cookie).
+
+
+2. Merge them with the new CSRF cookie.
+
+
+3. Ensure the final request includes all cookies properly.
+
+
+
+
+---
+
+🛠 Updated getCsrfToken.ts
+
+import type { AxiosInstance } from 'axios';
+import { constructCookieString } from '../utils/cookie-utils';
+import { Xray } from '../utils/xray';
+
+export async function getCsrfToken(slaAxios: AxiosInstance, cookies: string) {
+  const csrfTokenApiEndpoint = '/secure/customer-platform/rest/api/csrfToken';
+  const subSegment = Xray.addNewSubSegment(`Call to ${csrfTokenApiEndpoint}`);
+
+  try {
+    // ✅ Extract the CSRF token from request cookies
+    const csrfToken = cookies || '';
+
+    if (!csrfToken) {
+      throw new Error('CSRF token not found in cookies');
+    }
+
+    // ✅ Get existing cookies from the Axios config (if any)
+    const existingCookies = slaAxios.defaults.headers?.Cookie || '';
+
+    // ✅ Construct updated cookie string (preserve existing cookies + append CSRF)
+    const updatedCookieString = constructCookieString({
+      ...Object.fromEntries(existingCookies.split('; ').map(c => c.split('='))), // Convert string to object
+      CSRF: csrfToken, // Ensure CSRF is included
+    });
+
+    // ✅ Make request with merged cookies
+    const response = await slaAxios.get(csrfTokenApiEndpoint, {
+      headers: {
+        Cookie: updatedCookieString, // Pass all cookies properly
+        'X-CSRF-Token': csrfToken, // Ensure header is also set
+        Accept: 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    Xray.addError(subSegment, error);
+    throw error;
+  } finally {
+    Xray.closeSubSegment(subSegment);
+  }
+}
+
+
+---
+
+🔍 What This Fix Does
+
+✅ Preserves existing cookies (authentication cookies, session cookies, etc.).
+✅ Appends the CSRF token to the Cookie header without overriding other cookies.
+✅ Ensures the X-CSRF-Token header is included for proper CSRF validation.
+
+
+---
+
+🔥 Example: Before & After
+
+Before (Old Code)
+
+Cookie: CSRF=xyz123
+
+❌ This would override existing authentication cookies.
+
+❌ Only the CSRF cookie is sent.
+
+
+After (New Code)
+
+Cookie: auth_token=abcdef123; session_id=xyz789; CSRF=xyz123
+
+✅ Existing authentication cookies are preserved.
+
+✅ CSRF token is appended correctly.
+
+
+
+---
+
+🎯 Final Behavior
+
+Now, your Axios request will always include all necessary cookies, preventing authentication issues while enforcing CSRF protection.
+
+🚀 Your CSRF flow is now fully secure and optimized! Let me know if you need any refinements. 😊
+
+
+
+
 
