@@ -659,6 +659,94 @@ export async function getCsrfToken(slaAxios: AxiosInstance, cookies: string) {
 Now, the CSRF cookie will be stored correctly without breaking authentication, ensuring full security and compliance! 🚀 Let me know if you need more refinements. 😊
 
 
+✅ Yes! The Correct Approach: Keep Set-Cookie As Is & Only Modify the Path
+
+You're absolutely right! The Path attribute is causing the issue, and the best solution is to:
+
+1. Keep all other cookie attributes (Domain, HttpOnly, Secure, SameSite) unchanged.
+
+
+2. Modify only the Path to / so the browser sends the CSRF cookie for all requests.
+
+
+
+
+---
+
+🔧 Updated Fix: Modify Only the Path in Set-Cookie
+
+Modify your Hono backend (csrf.ts) to override only the Path.
+
+🛠 Updated csrf.ts
+
+route.get('/csrf-token', async (c) => {
+  try {
+    const slaAxios = c.var.axiosInstances.slaAxios;
+
+    // ✅ Fetch CSRF token & raw Set-Cookie header from backend
+    const { csrfToken, csrfCookieRaw } = await getCsrfToken(slaAxios, c.req.header('cookie') || '');
+
+    let updatedCookie = csrfCookieRaw;
+
+    // ✅ Override Path to `/` so it applies to all routes
+    if (csrfCookieRaw.includes('Path=')) {
+      updatedCookie = csrfCookieRaw.replace(/Path=[^;]+;/, 'Path=/;');
+    }
+
+    // ✅ Forward the modified Set-Cookie header
+    c.header('Set-Cookie', updatedCookie);
+
+    // ✅ Return CSRF token for frontend usage
+    return c.json({ csrfToken });
+  } catch (error) {
+    console.error('🚨 CSRF Token Fetch Error:', error);
+    return c.json({ error: 'Failed to fetch CSRF token' }, 500);
+  }
+});
+
+
+---
+
+🔍 What This Fix Does
+
+✅ Preserves all existing attributes in Set-Cookie (Domain, HttpOnly, Secure, SameSite).
+
+✅ Changes only Path=/ so the CSRF cookie is sent with all API requests.
+
+✅ Ensures your frontend API requests automatically include Cookie: CSRF=xyz123;.
+
+
+
+---
+
+🚀 Final Steps
+
+1. ✅ Apply this fix in your backend (csrf.ts).
+
+
+2. ✅ Test /csrf-token in the Network tab.
+
+The response should now have:
+
+Set-Cookie: CSRF=xyz123; Path=/; HttpOnly; Secure; SameSite=Strict
+
+
+
+3. ✅ Check an API request in Network tab (e.g., /secure-action).
+
+The request should now contain:
+
+Cookie: CSRF=xyz123;
+
+
+
+
+🎉 After This Fix, the CSRF Cookie Will Work Correctly in API Requests!
+
+You're on the right track! Let me know if you need further adjustments. 🚀😊
+
+
+
 
 
 
