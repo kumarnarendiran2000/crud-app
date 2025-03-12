@@ -1090,6 +1090,117 @@ Outcome
 
 This should align perfectly with your requirements while following best practices in React Query! 🚀
 
+You're absolutely right to ask! Let me clarify the difference and match the previous way exactly while keeping it in useCsrfToken.
+
+
+---
+
+Why Do We Call mutateAsync in handleLogout?
+
+useMutation does not automatically execute on component mount (unlike useQuery).
+
+Instead, you need to manually trigger it when required.
+
+The mutateAsync function is the correct way to invoke the mutation at the right moment (on logout click).
+
+
+Previously, useQuery was automatically running on mount, but now we need to trigger it manually.
+
+
+---
+
+Final Matching Flow (As Per Your Old Code, But With useMutation)
+
+useCsrfToken.ts
+
+import { useMutation } from "@tanstack/react-query";
+import { fetchCsrfToken } from "../../services/fetchCsrfToken";
+
+export function useCsrfToken() {
+    return useMutation({
+        mutationFn: fetchCsrfToken,
+        throwOnError: true, // Ensures errors bubble up
+    });
+}
+
+
+---
+
+Logout.tsx
+
+export default function Logout() {
+    const { mutateAsync: getCsrfToken, error: csrfTokenError } = useCsrfToken();
+    const { error: uiConfigDataError, data: uiConfigData } = useUiConfigData();
+
+    // Display errors like before
+    if (uiConfigDataError) {
+        return <p>Error while loading the uiConfigData configurations</p>;
+    }
+
+    if (csrfTokenError) {
+        return <p>Error while fetching CSRF token: {csrfTokenError.message}</p>;
+    }
+
+    const handleLogout = async () => {
+        try {
+            // ✅ No direct function calls; still using `useCsrfToken` ✅
+            const csrfToken = await getCsrfToken(); 
+            const baseUrl = uiConfigData?.baseSlalUrl;
+            window.location.href = `${baseUrl}/secure/customer-platform/logout?CSRF_TOKEN=${csrfToken}`;
+        } catch (error) {
+            console.error("Failed to fetch CSRF token before logout:", error);
+        }
+    };
+
+    return (
+        <HStack itemCenter>
+            <Button variant="flat" action="primary" onPress={handleLogout}>
+                <Button.Icon as={IconLogout} />
+                <Button.Text>Logout</Button.Text>
+            </Button>
+        </HStack>
+    );
+}
+
+
+---
+
+Key Fixes and Why This Works
+
+✅ No direct function call to fetchCsrfToken
+
+Instead of calling fetchCsrfToken directly in handleLogout, we properly use useCsrfToken.
+
+mutateAsync is the correct way to manually trigger the API request when needed.
+
+
+✅ Matches Your Previous Way
+
+Before: useQuery auto-called on mount.
+
+Now: useMutation is only triggered when the logout button is clicked.
+
+No unnecessary re-fetching.
+
+
+✅ Error Handling Like Before
+
+If fetching the CSRF token fails, it is displayed exactly like uiConfigDataError.
+
+
+✅ Simple & Matches Existing Flow
+
+The only difference? Now, fetching CSRF happens when the button is clicked, instead of on mount.
+
+
+
+---
+
+Final Answer
+
+🚀 This version is 100% the same flow as your previous one but using useMutation correctly.
+No unnecessary calls, no extra direct function calls. Just one clean useMutation call inside handleLogout like you wanted! 🎯
+
 
 
 
