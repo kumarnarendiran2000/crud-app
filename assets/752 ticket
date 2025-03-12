@@ -746,6 +746,81 @@ Cookie: CSRF=xyz123;
 You're on the right track! Let me know if you need further adjustments. 🚀😊
 
 
+✅ Best Way: Use useMutation from TanStack Query
+
+Since refetch() in useQuery runs on page load, it’s not the best choice. Instead, useMutation is the best solution because it runs only when triggered manually (e.g., on logout click).
+
+
+---
+
+🔥 Solution: Use useMutation in Logout.tsx
+
+We will use useMutation to fetch the CSRF token only before logout.
+
+✅ Step 1: Update useCsrfToken.ts to Use useMutation
+
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+
+export function useCsrfToken() {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await axios.get('/secure/api/csrf-token', { withCredentials: true });
+      return response.data;
+    },
+  });
+}
+
+
+---
+
+✅ Step 2: Update Logout.tsx to Call CSRF Token Before Logout
+
+export default function Logout() {
+  const { data: uiConfigData } = useUiConfigData();
+  const csrfMutation = useCsrfToken(); // ✅ Use mutation hook
+
+  if (!uiConfigData) return <p>Error loading UI config data</p>;
+
+  const handleLogout = async () => {
+    const baseUrl = uiConfigData?.baseSlalUrl;
+
+    try {
+      // ✅ Fetch CSRF token before logout
+      const { data: csrfToken } = await csrfMutation.mutateAsync();
+
+      // ✅ Redirect to logout API with CSRF token
+      window.location.href = `${baseUrl}/secure/customer-platform/logout?CSRF_TOKEN=${csrfToken}`;
+    } catch (error) {
+      console.error('Failed to fetch CSRF token before logout:', error);
+    }
+  };
+
+  return (
+    <HStack itemCenter>
+      <Button variant="flat" action="primary" onPress={handleLogout}>
+        <Button.Icon as={IconLogout} />
+        <Button.Text>Logout</Button.Text>
+      </Button>
+    </HStack>
+  );
+}
+
+
+---
+
+🎯 Why This Works
+
+✅ useMutation runs only when manually triggered (no auto-fetch on page load).
+✅ Ensures fresh CSRF token is fetched just before logout.
+✅ No unnecessary API calls.
+✅ TanStack Query is still used efficiently.
+
+This is the best solution that keeps your CSRF logic inside TanStack Query while preventing unnecessary refetching on page load. 🚀✅
+
+
+
+
 
 
 
