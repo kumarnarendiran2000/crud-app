@@ -819,6 +819,147 @@ export default function Logout() {
 This is the best solution that keeps your CSRF logic inside TanStack Query while preventing unnecessary refetching on page load. 🚀✅
 
 
+Got it! I'll maintain your existing file structure while integrating useMutation properly for the CSRF token and Logout flow. I'll ensure it matches your flow, keeps files separate, and improves the implementation.
+
+
+---
+
+🚀 Updated Flow Based on Your Structure
+
+✅ fetchCsrfToken.ts stays as it is
+
+✅ useCsrfToken.ts updated to use useMutation instead of useQuery
+
+✅ CSRF Token is only fetched inside handleLogout (not on mount)
+
+✅ Error handling and best practices included
+
+
+
+---
+
+1️⃣ fetchCsrfToken.ts (No Changes, As Is)
+
+import type { AxiosError } from "axios";
+import axios from "axios";
+
+/**
+ * Wrapper function to get CSRF token from backend
+ * @returns CSRF token string.
+ */
+export async function fetchCsrfToken(): Promise<string> {
+  return axios
+    .get("/secure/api/csrf-token", { withCredentials: true })
+    .then((res) => res.data)
+    .catch((error: AxiosError) => {
+      console.error("CSRF token retrieval failed - Status:", error.response?.status);
+      throw new Error(`Failed to retrieve CSRF token: ${error.response?.data || "No error details"}`);
+    });
+}
+
+
+---
+
+2️⃣ useCsrfToken.ts (Convert to useMutation)
+
+import { useMutation } from "@tanstack/react-query";
+import { fetchCsrfToken } from "../../services/fetchCsrfToken";
+
+/**
+ * Hook to fetch CSRF token on demand (only when needed)
+ */
+export function useCsrfToken() {
+  return useMutation({
+    mutationFn: fetchCsrfToken,
+    onError: (error) => {
+      console.error("CSRF token fetch failed:", error);
+      alert("Failed to retrieve CSRF token. Please try again.");
+    },
+  });
+}
+
+
+---
+
+3️⃣ Logout.tsx (Trigger CSRF & Logout on Button Click)
+
+import { Button } from "@compound-ui/button";
+import { IconLogout } from "@compound-ui/icon";
+import { HStack } from "@compound-ui/layout";
+import { useMutation } from "@tanstack/react-query";
+import { useCsrfToken } from "../hooks/data/useCsrfToken";
+import axios from "axios";
+
+export default function Logout() {
+  const baseUrl = "https://your-backend.com"; // Change this to your API
+
+  // ✅ Use CSRF Token Mutation Hook
+  const csrfMutation = useCsrfToken();
+
+  // ✅ Use Logout API Mutation
+  const logoutMutation = useMutation({
+    mutationFn: async (csrfToken: string) => {
+      await axios.post(`${baseUrl}/secure/customer-platform/logout`, {}, {
+        headers: { "X-CSRF-Token": csrfToken },
+        withCredentials: true,
+      });
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
+      alert("Logout failed. Please try again.");
+    },
+  });
+
+  // ✅ Handle Logout Button Click
+  const handleLogout = async () => {
+    try {
+      if (csrfMutation.isLoading || logoutMutation.isLoading) return;
+
+      // 1️⃣ Fetch CSRF token before logging out
+      const csrfToken = await csrfMutation.mutateAsync();
+
+      // 2️⃣ Call Logout API with CSRF token
+      await logoutMutation.mutateAsync(csrfToken);
+
+      // 3️⃣ Redirect after logout
+      window.location.href = "/login"; // Update as per your app
+    } catch (error) {
+      console.error("Error during logout process:", error);
+    }
+  };
+
+  return (
+    <HStack itemCenter>
+      <Button 
+        variant="flat" 
+        action="primary" 
+        onPress={handleLogout} 
+        isDisabled={csrfMutation.isLoading || logoutMutation.isLoading}
+      >
+        {csrfMutation.isLoading || logoutMutation.isLoading ? "Logging out..." : (
+          <>
+            <Button.Icon as={IconLogout} />
+            <Button.Text>Logout</Button.Text>
+          </>
+        )}
+      </Button>
+    </HStack>
+  );
+}
+
+
+---
+
+✨ What's Improved?
+
+✅ Maintains Your Existing File Structure
+✅ No More CSRF Calls on Page Mount
+✅ Only Calls CSRF API Just Before Logout
+✅ Best Practices: Prevents multiple clicks & API calls
+✅ Error Handling for Both CSRF & Logout API
+✅ Redirects After Successful Logout
+
+This follows your original structure but makes it cleaner and better. Let me know if you need any more refinements! 🚀
 
 
 
