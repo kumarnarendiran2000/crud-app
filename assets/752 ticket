@@ -961,6 +961,135 @@ export default function Logout() {
 
 This follows your original structure but makes it cleaner and better. Let me know if you need any more refinements! 🚀
 
+Here's your refactored code using useMutation while keeping your existing flow and error handling intact. This will ensure that the CSRF token is only fetched when the logout button is clicked.
+
+
+---
+
+1. Update useCsrfToken.ts to Use useMutation
+
+Refactor your existing useCsrfToken hook to use useMutation instead of useQuery.
+
+import { useMutation } from "@tanstack/react-query";
+import { fetchCsrfToken } from "../../services/fetchCsrfToken";
+
+export function useCsrfToken() {
+  return useMutation({
+    mutationFn: fetchCsrfToken,
+    onError: (error) => {
+      console.error("Failed to fetch CSRF token", error);
+    },
+  });
+}
+
+
+---
+
+2. Keep fetchCsrfToken.ts As Is
+
+Since you wanted to maintain the same function, keep fetchCsrfToken.ts unchanged.
+
+import type { AxiosError } from "axios";
+import axios from "axios";
+
+/**
+ * Wrapper function to get CSRF token from SLAL Customer-platform.
+ * @returns CSRF token string. Empty string if API call fails
+ */
+export async function fetchCsrfToken(): Promise<string> {
+  return axios
+    .get<string>("/secure/api/csrf-token")
+    .then((res) => res.data)
+    .catch((error: AxiosError) => {
+      const status = error.response?.status || "Unknown";
+      const errorData = error.response?.data || "No error details available";
+      console.error(`CSRF token retrieval failed - Status: ${status}`);
+      throw new Error(`Failed to retrieve CSRF token: ${errorData}`);
+    });
+}
+
+
+---
+
+3. Modify Logout.tsx to Call useCsrfToken Inside handleLogout
+
+Now, modify handleLogout to call the mutation function.
+
+import { Button } from "@compound-ui/button";
+import { IconLogout } from "@compound-ui/icon";
+import { HStack } from "@compound-ui/layout";
+import { useCsrfToken } from "../../hooks/data/useCsrfToken";
+import { useUiConfigData } from "../../hooks/data/useUiConfigData";
+
+export default function Logout() {
+  const { error: uiConfigDataError, data: uiConfigData } = useUiConfigData();
+  const csrfMutation = useCsrfToken();
+
+  if (uiConfigDataError) {
+    return <p>Error while loading the UI config data configurations</p>;
+  }
+
+  const handleLogout = async () => {
+    try {
+      const csrfToken = await csrfMutation.mutateAsync();
+      const baseUrl = uiConfigData?.baseSlalUrl;
+      window.location.href = `${baseUrl}/secure/customer-platform/logout?CSRF_TOKEN=${csrfToken}`;
+    } catch (error) {
+      console.error("Error fetching CSRF token before logout", error);
+    }
+  };
+
+  return (
+    <HStack itemCenter>
+      <Button variant="flat" action="primary" onPress={handleLogout}>
+        <Button.Icon as={IconLogout} />
+        <Button.Text>Logout</Button.Text>
+      </Button>
+    </HStack>
+  );
+}
+
+
+---
+
+Explanation of Changes
+
+1. Replaced useQuery with useMutation:
+
+Now, the CSRF token will only be fetched when the logout button is clicked.
+
+This avoids fetching on page load.
+
+
+
+2. Used mutateAsync() inside handleLogout:
+
+Ensures the CSRF token is retrieved before redirecting to logout.
+
+
+
+3. Error Handling:
+
+If fetching the CSRF token fails, it logs the error and prevents logout execution.
+
+
+
+
+
+---
+
+Outcome
+
+✅ CSRF token is fetched only on clicking the logout button.
+✅ Maintains separate files and matches your current flow.
+✅ No unnecessary API calls on page load.
+✅ Error handling remains intact.
+
+
+---
+
+This should align perfectly with your requirements while following best practices in React Query! 🚀
+
 
 
 
