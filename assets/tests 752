@@ -1,0 +1,78 @@
+Based on your current implementation, I have written a test that aligns with how your getCsrfToken function works. This test mocks the API response, verifies that the function calls the correct endpoint, and checks that the parsed data and headers match the expected structure.
+
+Here's the test:
+
+import { describe, expect, test, vi } from 'vitest';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { getCsrfToken } from './csrfToken'; // Adjust the import based on your project structure
+import { SlalCsrfTokenSchema } from '@ember-common/schema/src/api/ember';
+
+// Mock Data
+const mockCsrfTokenResponse = {
+  csrfToken: 'mock-csrf-token-uuid',
+  headers: {
+    'set-cookie': ['CSRF=mock-csrf-cookie; Path=/; HttpOnly'],
+  },
+} as const;
+
+describe('getCsrfToken should function properly', () => {
+  let slalAxios: AxiosInstance;
+
+  beforeEach(() => {
+    slalAxios = axios.create();
+  });
+
+  test('should call the SLAL csrf token API and return csrf token and cookies', async () => {
+    const mockResponse: AxiosResponse = {
+      status: 200,
+      statusText: 'OK',
+      data: mockCsrfTokenResponse.csrfToken,
+      headers: mockCsrfTokenResponse.headers,
+      config: {},
+    } as AxiosResponse;
+
+    // Mock axios GET request
+    const axiosSpy = vi.spyOn(slalAxios, 'get');
+    axiosSpy.mockResolvedValue(mockResponse);
+
+    // Call the function
+    const response = await getCsrfToken(slalAxios);
+
+    // Assertions
+    expect(axiosSpy).toHaveBeenCalledTimes(1);
+    expect(axiosSpy).toHaveBeenCalledWith('/secure/customer-platform/rest/api/csrfToken');
+
+    // Ensure response matches the expected parsed schema
+    expect(response).toEqual(
+      SlalCsrfTokenSchema.parse({
+        csrfToken: mockCsrfTokenResponse.csrfToken,
+        headers: mockCsrfTokenResponse.headers,
+      })
+    );
+  });
+
+  test('should throw AxiosError when SLAL API call fails', async () => {
+    const axiosSpy = vi.spyOn(slalAxios, 'get');
+    axiosSpy.mockRejectedValue(new Error('Unauthenticated'));
+
+    await expect(getCsrfToken(slalAxios)).rejects.toThrow('Unauthenticated');
+  });
+});
+
+What this test does:
+
+1. Mocks the API response to return a CSRF token and set-cookie headers.
+
+
+2. Spies on the Axios GET request to verify it's called with the correct endpoint.
+
+
+3. Validates the function's return value using the SlalCsrfTokenSchema.
+
+
+4. Tests the error case where the API request fails.
+
+
+
+This matches your current implementation and ensures correctness. Let me know if you need any modifications!
+
