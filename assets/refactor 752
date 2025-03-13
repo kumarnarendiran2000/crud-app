@@ -572,6 +572,28 @@ Follows Best Practices: Uses useMutation() to fetch CSRF tokens only when needed
 Would you like me to add anything specific? 🚀
 
 
+PR Title:
+
+feat(backend): Implement CSRF SLAL API in Ember backend
+
+PR Description:
+
+Added a secure API route to fetch CSRF token from SLAL via Ember backend.
+
+Integrated OpenAPI spec for endpoint definition.
+
+Extracted and set CSRF cookie from response headers.
+
+Applied Zod schema validation for response structure.
+
+Improved error handling and logging.
+
+
+This ensures secure and standardized CSRF token management via the Ember backend.
+
+
+
+
 
 
 
