@@ -481,5 +481,98 @@ Pass through headers (CSRF Cookie) as-is.
 This keeps the implementation efficient, secure, and clean. Let me know if you need any refinements!
 
 
+PR Title:
+
+Integrate CSRF Token Fetching via Ember Backend Using Mutation
+
+PR Description:
+
+Updated frontend to fetch CSRF token from Ember backend instead of SLAL.
+
+Changed CSRF token retrieval from component mount to trigger on logout button click.
+
+Refactored CSRF token handling to use useMutation() in Tanstack Query.
+
+Modified Logout.tsx, useCsrfToken.ts, and fetchCsrfToken.ts to align with the new flow.
+
+
+Pull Request Title:
+
+Refactor CSRF Token Handling in Frontend to Use Ember Backend with TanStack Mutation
+
+
+---
+
+Pull Request Description:
+
+🔹 Summary
+
+This PR refactors the CSRF token flow in the frontend by removing direct API calls to SLAL and instead calling the Ember backend for CSRF handling. Additionally, it modifies the TanStack Query implementation to use useMutation() instead of fetching the CSRF token on component mount.
+
+🔹 Key Changes
+
+1. Updated Frontend API Calls:
+
+Changed CSRF token fetch from SLAL API to Ember backend API.
+
+Ensures all CSRF token handling is done via Ember backend.
+
+
+
+2. Refactored CSRF Fetch Logic in TanStack Query:
+
+Replaced useQuery() (which was triggering the CSRF API call on component mount) with useMutation().
+
+Now, the CSRF token is only fetched on logout button click, reducing unnecessary API calls.
+
+
+
+3. Code Changes Across 3 Files:
+
+Logout.tsx: Moved CSRF token fetching logic to handleLogout function.
+
+useCsrfToken.ts: Updated implementation to use useMutation() instead of useQuery().
+
+fetchCsrfToken.ts: Ensured it correctly calls the Ember backend.
+
+
+
+
+🔹 Why This Change?
+
+Improves Efficiency: Avoids unnecessary CSRF API calls on page load.
+
+Centralized CSRF Handling: All CSRF-related logic is now handled within Ember backend.
+
+Follows Best Practices: Uses useMutation() to fetch CSRF tokens only when needed instead of preloading them.
+
+
+🔹 How to Test?
+
+1. Navigate to the application and log in.
+
+
+2. Click on the Logout button.
+
+
+3. Observe the CSRF token request being made only on button click (not on page load).
+
+
+4. Ensure successful logout without issues.
+
+
+
+🔹 Ticket/Reference:
+
+[Link to Jira/Ticket if applicable]
+
+
+---
+
+Would you like me to add anything specific? 🚀
+
+
+
+
 
 
