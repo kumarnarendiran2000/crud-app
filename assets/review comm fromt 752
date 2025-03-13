@@ -1,0 +1,46 @@
+Here’s an updated PR title and description reflecting the new approach of using a direct Axios call instead of Tanstack Query hooks:
+
+
+---
+
+PR Title:
+
+chore(dashboard): Fetch CSRF token via Ember backend using direct API call
+
+
+---
+
+Updated Description:
+
+Updated frontend to fetch CSRF token from Ember backend instead of calling SLAL API directly.
+
+Removed React Query hooks (useCsrfToken) and replaced them with a direct Axios API call to fetch the CSRF token when the logout button is clicked.
+
+Refactored Logout.tsx and removed unnecessary dependencies on Tanstack Query.
+
+
+
+---
+
+Feature/Issue Validation & Testing
+
+✅ Tested changes in local
+✅ Tested changes in AWS env
+
+
+---
+
+Checklist
+
+[ ] Have you added tests that prove your fix is effective?
+
+[ ] Has code been commented, particularly in hard-to-understand areas?
+
+[ ] Have you made corresponding changes to the documentation?
+
+
+
+---
+
+This version keeps it clear and concise while capturing the main changes. Let me know if you need any modifications!
+
