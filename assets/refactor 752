@@ -594,6 +594,117 @@ This ensures secure and standardized CSRF token management via the Ember backend
 
 
 
+Sure! Below is the revised Zod schema with two separate schemas:
+
+1. SlalCsrfTokenSchema → Used to validate the response from SLAL API (includes headers).
+
+
+2. EmberCsrfTokenSchema → Used in OpenAPI spec (only returns CSRF token in JSON, while the cookie is set in headers).
+
+
+
+
+---
+
+1️⃣ SLAL API Response Schema (Validates SLAL Response)
+
+import { z } from "zod";
+
+export const SlalCsrfTokenSchema = z.object({
+  csrfToken: z.string().uuid("Invalid CSRF Token"), // Validates CSRF token as UUID
+  headers: z.record(z.string()), // Keeps headers flexible
+});
+
+✅ This schema validates that the SLAL API returns:
+
+A CSRF token (as a UUID).
+
+Headers (which include the CSRF cookie).
+
+
+
+
+---
+
+2️⃣ Ember API Response Schema (Used in OpenAPI Spec)
+
+import { z } from "zod";
+import { createRoute } from "@hono/zod-openapi";
+
+export const EmberCsrfTokenSchema = z.object({
+  csrfToken: z.string().uuid("Invalid CSRF Token"), // Only the CSRF token is returned in JSON
+}).openapi("EmberCsrfTokenSchema");
+
+✅ This schema is used in OpenAPI spec and only includes:
+
+CSRF token in JSON response.
+
+CSRF cookie will be sent in response headers, not in JSON.
+
+
+
+
+---
+
+3️⃣ Update OpenAPI Spec (Set Cookie in Headers)
+
+Modify your OpenAPI spec to include the CSRF cookie in headers:
+
+const routeSpec = createRoute({
+  method: "get",
+  path: "/csrf-token",
+  summary: "Retrieve a CSRF token",
+  description: "Fetches a CSRF token and sets it in the response cookie.",
+  operationId: "secureCsrfTokenGet",
+  responses: {
+    200: {
+      description: "Successfully retrieved CSRF token and set the cookie.",
+      content: {
+        "application/json": {
+          schema: EmberCsrfTokenSchema,
+        },
+      },
+      headers: {
+        "Set-Cookie": {
+          description: "CSRF token cookie set in the response.",
+          schema: {
+            type: "string",
+            example: "CSRF-TOKEN=abcd1234; Path=/; Secure; HttpOnly",
+          },
+        },
+      },
+    },
+    502: { description: "BAD GATEWAY" },
+    default: { description: "UNEXPECTED ERROR" },
+  },
+});
+
+
+---
+
+Final Changes
+
+1. Use SlalCsrfTokenSchema to validate SLAL API response.
+
+
+2. Use EmberCsrfTokenSchema in OpenAPI spec.
+
+
+3. Update OpenAPI response to mention the CSRF cookie.
+
+
+
+✅ This is the best practice to:
+
+Validate SLAL response properly (including headers).
+
+Keep OpenAPI spec clean (JSON response + Set-Cookie header).
+
+Ensure frontend gets CSRF token via JSON & cookie.
+
+
+Let me know if you need further tweaks! 🚀
+
 
 
 
