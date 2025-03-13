@@ -338,3 +338,148 @@ describe('CSRF Token Route Tests', () => {
 Let me know if you need further tweaks.
 
 
+You're absolutely right! Since we are just passing the response as-is and extracting the CSRF cookie only in the OpenAPI route, full validation of the response might not be necessary.
+
+What should we validate?
+
+1. CSRF Token (Important ✅)
+
+Since the CSRF token is being returned as a JSON response, it must be validated.
+
+We can ensure it is a valid UUID to prevent invalid or malformed data.
+
+
+
+2. CSRF Cookie (Not Necessary ❌)
+
+The cookie is being passed as-is from the backend, and we are not modifying its attributes.
+
+Since cookies are part of the HTTP headers and not JSON, Zod validation does not apply to headers.
+
+If the backend correctly sets the cookie, we don't need to validate it.
+
+
+
+
+
+---
+
+Refined Implementation with UUID Validation
+
+Zod Schema (csrfToken.schema.ts)
+
+import { z } from "zod";
+
+export const CsrfTokenSchema = z.object({
+  csrfToken: z.string().uuid("Invalid CSRF Token"), // Validate as UUID
+});
+
+export type CsrfTokenResponse = z.infer<typeof CsrfTokenSchema>;
+
+
+---
+
+Wrapper (getCsrfToken.ts)
+
+Since we are only validating the token (not the cookie), we modify our wrapper function:
+
+import type { AxiosInstance } from "axios";
+import { Xray } from "../utils/xray";
+import { CsrfTokenSchema, CsrfTokenResponse } from "../schemas/csrfToken.schema";
+
+export async function getCsrfToken(slalAxios: AxiosInstance): Promise<CsrfTokenResponse> {
+  const csrfTokenApiEndpoint = "/secure/customer-platform/rest/api/csrfToken";
+  const subSegment = Xray.addNewSubSegment(`Call to ${csrfTokenApiEndpoint}`);
+
+  try {
+    const response = await slalAxios.get(csrfTokenApiEndpoint);
+    
+    // Validate only the CSRF token as a UUID
+    const validatedResponse = CsrfTokenSchema.parse({ csrfToken: response.data });
+
+    return validatedResponse;
+  } catch (error) {
+    Xray.addError(subSegment, error);
+    throw error;
+  } finally {
+    Xray.closeSubSegment(subSegment);
+  }
+}
+
+
+---
+
+OpenAPI Spec (secureApiRoute.ts)
+
+We extract the CSRF token, set the cookie as-is, and validate the token only.
+
+import { createRoute } from "@hono/zod-openapi";
+import { factory } from "../../hono-factory";
+import { getCsrfToken } from "../../services/wrappers/csrfToken";
+import { z } from "zod";
+
+export const handleGETCsrfToken = factory.createHandler((app, path) => {
+  const routeSpec = createRoute({
+    method: "get",
+    path,
+    summary: "Retrieve a CSRF token",
+    description: "Fetches a CSRF token and sets it in the response cookie",
+    responses: {
+      200: {
+        description: "Successfully retrieved CSRF token",
+        content: {
+          "application/json": {
+            schema: z.object({ csrfToken: z.string().uuid("Invalid CSRF Token") }),
+          },
+        },
+      },
+      500: {
+        description: "Internal Server Error",
+        content: {
+          "application/json": {
+            schema: z.object({ error: z.string() }),
+          },
+        },
+      },
+    },
+  });
+
+  app.openapi(routeSpec, async (c) => {
+    const slalAxios = c.var.axiosInstances.slalAxios;
+    const response = await getCsrfToken(slalAxios);
+
+    // Extract CSRF cookie as-is from headers
+    const setCookieHeader = response.headers["set-cookie"];
+    const csrfCookieFromResponse = setCookieHeader?.find((cookie) => cookie.startsWith("CSRF=")) || "";
+
+    // Set CSRF cookie back in response
+    if (csrfCookieFromResponse) {
+      c.header("Set-Cookie", csrfCookieFromResponse);
+    }
+
+    return c.json({ csrfToken: response.csrfToken });
+  });
+});
+
+
+---
+
+Final Thoughts
+
+✅ CSRF Token Validation: Done as UUID (Prevents invalid/malformed values).
+
+❌ CSRF Cookie Validation: Not needed (Passed as-is from headers).
+
+✅ Best Practice:
+
+Validate only the data you control (CSRF Token).
+
+Pass through headers (CSRF Cookie) as-is.
+
+
+
+This keeps the implementation efficient, secure, and clean. Let me know if you need any refinements!
+
+
+
+
