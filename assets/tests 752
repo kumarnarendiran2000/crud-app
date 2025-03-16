@@ -76,3 +76,102 @@ What this test does:
 
 This matches your current implementation and ensures correctness. Let me know if you need any modifications!
 
+
+Here's your CSRF token secure API route test, structured exactly like the customer overview test from your image.
+
+
+---
+
+📝 Test Code: get-csrf-token-cookie.test.ts
+
+import { beforeAll, describe, expect, test, vi } from 'vitest';
+import { handle } from 'hono/aws-lambda';
+import { factory } from 'hono-factory';
+import { honoContextVariablesInit } from '../../../middleware/hono-variables-init';
+import { getCsrfToken } from '../../../services/wrappers/csrfToken';
+import { handleGETCsrfToken } from '../get-csrf-token-cookie';
+import { mockCsrfTokenResponse } from '@ember-common/schema/test/csrf-token-mock-data';
+import { getEvent } from '../../../../testUtils/testUtils';
+
+describe('GET /secure/csrf-token', () => {
+  const mockApp = factory.createApp();
+  const handler = handle(mockApp);
+
+  beforeAll(() => {
+    mockApp.use('*', honoContextVariablesInit);
+    handleGETCsrfToken(mockApp, '/secure/csrf-token');
+  });
+
+  test('should call the SLAL CSRF token API and return CSRF token with Set-Cookie', async () => {
+    // Mock wrapper to return the mock CSRF response
+    vi.mock('../../../services/wrappers/csrfToken', () => ({
+      getCsrfToken: vi.fn().mockResolvedValue(mockCsrfTokenResponse),
+    }));
+
+    // Simulate API request
+    const response = await handler(
+      getEvent('/secure/csrf-token', { 
+        Cookie: 'auth-cookie=someAuthToken' 
+      })
+    );
+
+    // Parse response
+    const responseBody = JSON.parse(response.body);
+
+    // ✅ Assert the API response contains the correct CSRF token
+    expect(responseBody).toMatchObject({ csrfToken: mockCsrfTokenResponse.csrfToken });
+
+    // ✅ Assert the correct `Set-Cookie` header is included in the response
+    expect(response.multiValueHeaders['Set-Cookie']).toContain(mockCsrfTokenResponse.headers['set-cookie'][0]);
+  });
+
+  test('should throw an error when SLAL API call fails', async () => {
+    vi.mock('../../../services/wrappers/csrfToken', () => ({
+      getCsrfToken: vi.fn().mockRejectedValue(new Error('SLAL API failure')),
+    }));
+
+    // Simulate API request
+    const response = await handler(
+      getEvent('/secure/csrf-token', { 
+        Cookie: 'auth-cookie=someAuthToken' 
+      })
+    );
+
+    // ✅ Expect response status to be 500 Internal Server Error
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toEqual({ error: 'SLAL API failure' });
+  });
+});
+
+
+---
+
+✅ Why is this exactly like your customer overview test?
+
+Structure matches exactly:
+
+Mocks wrapper service (getCsrfToken).
+
+Calls the secure route (handleGETCsrfToken).
+
+Simulates an API request (getEvent).
+
+Asserts response correctness.
+
+
+Includes proper validation:
+
+CSRF token presence.
+
+Set-Cookie header forwarding.
+
+Error handling when SLAL API fails.
+
+
+
+
+---
+
+This test follows the exact format of your customer overview test while ensuring CSRF token behavior is validated properly! 🚀
+
+
