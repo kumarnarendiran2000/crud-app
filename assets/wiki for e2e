@@ -395,3 +395,330 @@ This ensures the test suite remains reliable and up to date with ongoing develop
 
 This keeps developers accountable for test updates and prevents test failures due to untested UI changes. Let me know if you'd like any tweaks before finalizing!
 
+
+Here's the finalized E2E Test Suite Wiki Document, incorporating all refinements and additions:
+
+
+---
+
+E2E Test Suite - Ember Dashboard
+
+1. Overview
+
+The E2E test suite ensures the Ember Dashboard functions correctly using mock data served from the SLAL Mock Server. This suite automates testing for key dashboard functionalities, validating data accuracy and UI interactions.
+
+
+---
+
+2. Repository & Folder Structure
+
+The test suite is located under:
+
+📂 Ember/tests/e2e/
+
+Configuration Files:
+
+wdio.conf.ts → WebDriverIO configuration.
+
+tsconfig.json, .eslintrc.mjs → TypeScript & linting rules.
+
+
+Test Structure:
+
+📂 test/
+
+📂 screens/ → UI interaction files.
+
+dashboardScreenSelectors.ts → Stores UI selectors.
+
+dashboardScreenSpec.ts → Contains the test suite.
+
+
+📂 utils/ → Helper functions.
+
+testConfig.ts → Stores expected mock data for validation.
+
+
+
+
+
+
+---
+
+3. Test Execution & Setup
+
+A. Steps to Run the E2E Tests
+
+To execute the test suite:
+
+1. Start the SLAL Mock Server.
+
+
+2. Start the Backend Server in Mock Mode (to connect with the mock SLAL server).
+
+
+3. Start the Ember Dashboard Web Server.
+
+
+4. Navigate to Ember/tests/e2e/, where wdio.conf.ts is located.
+
+
+5. Run the test suite using one of the following commands:
+
+Manually:
+
+npx wdio run wdio.conf.ts
+
+Using a Script (package.json):
+
+npm run wdio:local
+
+The configuration file (wdio.conf.ts) ensures that the correct test suite is executed.
+
+
+
+
+B. Test Execution Behavior
+
+The tests run in headed mode.
+
+Results are displayed in the spec reporter in the terminal.
+
+Screenshots and reports are automatically generated.
+
+
+
+---
+
+4. Mock Data Usage & Validation
+
+The test suite displays on-screen data, which comes from the mock SLAL server.
+
+The expected values for validation are stored in utils/testConfig.ts.
+
+The test suite runs against 3 mock users, each having a different mock data response.
+
+
+Validation Approach:
+
+1. For the first two mock users:
+
+The test suite only validates the displayed values against the expected values from testConfig.ts.
+
+
+
+2. For the third mock user:
+
+In addition to value validation, the test suite also verifies:
+
+Button interactions
+
+Alert box verification
+
+Feedback mechanism validation
+
+Footer elements interaction
+
+
+
+
+
+This structured approach ensures that the test suite performs both data validation and UI interaction testing efficiently.
+
+
+---
+
+5. Selectors & Best Practices
+
+Completely avoided XPath selectors.
+
+Used common DOM element selectors to improve test stability and maintainability.
+
+
+
+---
+
+6. Reporting & Screenshots Integration
+
+A. Allure Reporting
+
+We integrated Allure Report Generation to visualize test results in a structured format.
+
+Steps to Generate & View Allure Report
+
+1. Run the test suite.
+
+
+2. Execute the script to generate the report:
+
+npm run allure:gen
+
+
+3. Open the report in a browser using:
+
+npm run allure:open
+
+
+4. The Allure results and reports are stored in:
+
+Ember/tests/e2e/reports/allure/allure-results
+Ember/tests/e2e/reports/allure/allure-report
+
+
+5. The HTML report can be opened directly from the allure-report folder.
+
+
+
+B. Screenshot Capture
+
+Each test is recorded with a screenshot upon success or failure.
+
+Screenshots are grouped into:
+
+Success Folder
+
+Failure Folder
+
+
+The screenshots are stored under:
+
+Ember/tests/e2e/reports/screenshots
+
+Before every new test run, the Allure report and screenshot folders are cleaned to avoid old test artifacts.
+
+
+
+---
+
+7. GitHub Actions: E2E Test Pipeline Integration
+
+The E2E test suite has been integrated into GitHub Actions as a dedicated pipeline, ensuring automated execution in CI/CD.
+
+A. E2E Test Pipeline Workflow
+
+The pipeline follows these steps:
+
+1. Install dependencies
+
+
+2. Start required servers:
+
+SLAL Mock Server
+
+Backend Server (mock mode)
+
+Ember Dashboard Web Server
+
+
+
+3. Trigger the test suite from the e2e folder
+
+
+4. Generate Allure Report using the script
+
+
+5. Upload Allure Reports & Screenshots as Artifacts
+
+
+
+B. Execution Triggers
+
+The pipeline runs in the following scenarios:
+
+Scheduled Execution:
+
+Runs every midnight via a cron job.
+
+
+On PR Approval:
+
+Triggers immediately after a PR review is approved.
+
+
+
+C. Artifact Management: Auto Cleanup Pipeline
+
+To manage storage efficiently, we have a dedicated delete-pipeline for cleaning up test artifacts:
+
+Once a branch is deleted (post PR merge or manual deletion), the pipeline removes all associated artifacts.
+
+This is achieved by matching the artifact name to the branch name and ensuring only the correct artifacts are deleted.
+
+
+
+---
+
+8. Future Enhancements & Next Steps
+
+To further improve test coverage and execution efficiency, we plan to implement the following enhancements:
+
+A. Expanding Test Coverage
+
+Currently, the E2E test suite validates only pension employees.
+
+Need to extend test coverage for:
+
+Insurance employees
+
+Savings employees
+
+
+This will require updating test data in the mock server and adjusting validations accordingly.
+
+
+B. Covering Additional Test Scenarios
+
+Identify any left-out areas in the dashboard that need validation.
+
+Expand existing test cases to ensure full coverage of critical workflows.
+
+
+C. Enhancing the Test Pipeline
+
+Cross-browser testing:
+
+Currently, tests run only on a single browser in headless mode.
+
+Need to implement multi-browser support (Chrome, Firefox, Edge) for better compatibility testing.
+
+
+Mobile Testing Integration:
+
+Explore running the same E2E test suite on mobile devices.
+
+Trial and adjust tests where necessary to ensure they work for mobile UI interactions.
+
+
+
+D. Test Suite Maintenance & Refactoring
+
+Resolve pending TODOs in the test suite to improve maintainability.
+
+Refactor tests to align with the latest UI updates and mock server fixes.
+
+Ensure that new UI components and updated API responses are correctly reflected in the test validations.
+
+
+
+---
+
+9. Developer's Note: Keeping E2E Tests Updated
+
+Any UI changes or feature updates must be reflected in the E2E test suite.
+
+Developers making UI modifications should ensure:
+
+Existing E2E tests are updated to accommodate UI changes.
+
+New E2E test cases are added for any newly introduced functionality.
+
+Tests are executed post-modification to validate the changes.
+
+
+
+
+---
+
+This final version now includes all details in a structured format. Let me know if you'd like any last refinements!
+
+
