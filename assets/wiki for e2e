@@ -289,3 +289,109 @@ This is achieved by matching the artifact name to the branch name and ensuring o
 This precisely captures how your pipeline is structured and automates test execution and cleanup efficiently. Let me know if you'd like any refinements!
 
 
+Yes! Adding future enhancements will make the wiki more forward-looking and help track upcoming improvements. Here’s how we can structure this section:
+
+
+---
+
+8. Future Enhancements & Next Steps
+
+To further improve test coverage and execution efficiency, we plan to implement the following enhancements:
+
+A. Expanding Test Coverage
+
+Currently, the E2E test suite validates only pension employees.
+
+Need to extend test coverage for:
+
+Insurance employees
+
+Savings employees
+
+
+This will require updating test data in the mock server and adjusting validations accordingly.
+
+
+B. Covering Additional Test Scenarios
+
+Identify any left-out areas in the dashboard that need validation.
+
+Expand existing test cases to ensure full coverage of critical workflows.
+
+
+C. Enhancing the Test Pipeline
+
+Cross-browser testing:
+
+Currently, tests run only on a single browser in headless mode.
+
+Need to implement multi-browser support (Chrome, Firefox, Edge) for better compatibility testing.
+
+
+Mobile Testing Integration:
+
+Explore running the same E2E test suite on mobile devices.
+
+Trial and adjust tests where necessary to ensure they work for mobile UI interactions.
+
+
+
+
+---
+
+Why This is Important?
+
+✅ Broader Coverage → Ensures different employee types are tested.
+✅ Cross-Browser Compatibility → Detects browser-specific issues early.
+✅ Mobile Readiness → Prepares the suite for a seamless mobile testing transition.
+
+
+---
+
+This keeps the roadmap clear while tracking key improvements. Let me know if you want to tweak anything before finalizing the wiki document!
+
+Yes, we should add this point under future enhancements, as it ensures the test suite stays up to date with UI and mock server changes. Here's how we can integrate it into the Future Enhancements section:
+
+
+---
+
+D. Test Suite Maintenance & Refactoring
+
+Resolve pending TODOs in the test suite to improve maintainability.
+
+Refactor tests to align with the latest UI updates and mock server fixes.
+
+Ensure that new UI components and updated API responses are correctly reflected in the test validations.
+
+
+
+---
+
+This keeps the suite aligned with evolving requirements and prevents outdated tests from affecting execution. Let me know if you want any refinements before we finalize the wiki document!
+
+Great point! We should add a Developer's Note to ensure UI changes are reflected in the E2E test suite. Here's how we can include it at the end of the document:
+
+
+---
+
+9. Developer's Note: Keeping E2E Tests Updated
+
+Any UI changes or feature updates must be reflected in the E2E test suite.
+
+Developers making UI modifications should ensure:
+
+Existing E2E tests are updated to accommodate UI changes.
+
+New E2E test cases are added for any newly introduced functionality.
+
+Tests are executed post-modification to validate the changes.
+
+
+This ensures the test suite remains reliable and up to date with ongoing development.
+
+
+
+---
+
+This keeps developers accountable for test updates and prevents test failures due to untested UI changes. Let me know if you'd like any tweaks before finalizing!
+
