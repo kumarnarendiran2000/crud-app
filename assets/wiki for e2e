@@ -222,3 +222,70 @@ This structured approach ensures that the test suite performs both data validati
 
 Now, this aligns perfectly with your expectations and test execution flow. Let me know if you’d like any refinements before adding the E2E pipeline details!
 
+
+Here's the GitHub Actions Pipeline section with all the details structured properly:
+
+
+---
+
+7. GitHub Actions: E2E Test Pipeline Integration
+
+The E2E test suite has been integrated into GitHub Actions as a dedicated pipeline, ensuring automated execution in CI/CD.
+
+A. E2E Test Pipeline Workflow
+
+The pipeline follows these steps:
+
+1. Install dependencies
+
+
+2. Start required servers:
+
+SLAL Mock Server
+
+Backend Server (mock mode)
+
+Ember Dashboard Web Server
+
+
+
+3. Trigger the test suite from the e2e folder
+
+
+4. Generate Allure Report using the script
+
+
+5. Upload Allure Reports & Screenshots as Artifacts
+
+
+
+B. Execution Triggers
+
+The pipeline runs in the following scenarios:
+
+Scheduled Execution:
+
+Runs every midnight via a cron job.
+
+
+On PR Approval:
+
+Triggers immediately after a PR review is approved.
+
+
+
+C. Artifact Management: Auto Cleanup Pipeline
+
+To manage storage efficiently, we have a dedicated delete-pipeline for cleaning up test artifacts:
+
+Once a branch is deleted (post PR merge or manual deletion), the pipeline removes all associated artifacts.
+
+This is achieved by matching the artifact name to the branch name and ensuring only the correct artifacts are deleted.
+
+
+
+---
+
+This precisely captures how your pipeline is structured and automates test execution and cleanup efficiently. Let me know if you'd like any refinements!
+
+
