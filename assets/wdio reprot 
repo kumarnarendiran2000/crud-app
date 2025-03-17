@@ -1,0 +1,36 @@
+Got it! Here's your refined Jira ticket with the correct details:
+
+
+---
+
+Title: Document E2E Test Suite in Wiki
+
+Description:
+Create a detailed wiki document covering the E2E test suite for the Ember Dashboard. The document should include:
+
+Test Framework & Structure: WebDriverIO (without strict POM), common selectors in one place, test suite grouped together, and helper functions in a single file.
+
+Scope: Covers the entire SPA (detailed areas to be defined later).
+
+CI/CD Pipeline:
+
+Dedicated E2E test pipeline running via Cron Job every midnight.
+
+Triggered post PR approval.
+
+Integrated Allure Report with screenshots.
+
+Artifacts auto-deleted upon branch deletion via a separate cleanup pipeline.
+
+
+Future Improvements: (To be discussed).
+
+
+Priority: Medium
+Estimated Effort: 2-3 hours
+
+
+---
+
+This keeps it accurate, concise, and ready for action. Let me know if you want any tweaks!
+
