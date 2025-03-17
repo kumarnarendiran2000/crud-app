@@ -1,1 +1,26 @@
 if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
+
+You can phrase your response professionally and clearly, ensuring that the reviewer understands your reasoning while also inviting further clarification if needed. Here’s a way you could respond in the PR comments:
+
+
+---
+
+Response to Reviewer:
+"I have already verified both the CSRF token and the set-cookie header within the response object by using toMatchObject(mockSlalCsrfTokenResponse). Since the mock response includes both the token and headers, this assertion ensures they are correctly validated.
+
+Would you like me to add an explicit assertion for the set-cookie header separately for better readability, or do you think the current approach suffices? Happy to adjust based on your preference!"
+
+
+---
+
+This response does two things:
+
+1. Defends your approach by explaining that toMatchObject already covers both aspects.
+
+
+2. Keeps the conversation open by asking if the reviewer still prefers a separate assertion.
+
+
+
+This way, you acknowledge their feedback while demonstrating that you've already thought it through.
+
