@@ -24,3 +24,21 @@ This response does two things:
 
 This way, you acknowledge their feedback while demonstrating that you've already thought it through.
 
+Yes, you can refine your response to also mention that you have already added the explicit verification in the route handler test. Here’s how you can phrase it professionally:
+
+
+---
+
+Response to Reviewer:
+"I have already verified both the CSRF token and the set-cookie header within the response object using toMatchObject(mockSlalCsrfTokenResponse). Since the mock response includes both the token and headers, this assertion ensures they are correctly validated.
+
+Additionally, I have explicitly asserted the set-cookie header in the route handler test, ensuring that the cookie is properly included in the response.
+
+Would you like me to add a separate assertion for set-cookie here as well for better readability, or do you think the current approach suffices? Happy to adjust based on your preference!"
+
+
+---
+
+This keeps the response structured, professional, and ensures the reviewer understands that their feedback has already been addressed in another test. Let me know if you want further refinements!
+
+
