@@ -1,0 +1,224 @@
+Here's the updated wiki document integrating all your details while ensuring a smooth flow:
+
+
+---
+
+E2E Test Suite - Ember Dashboard
+
+1. Overview
+
+The E2E test suite is designed to validate the Ember Dashboard functionality using mock data from the SLAL Mock Server. This document provides an overview of the setup, execution process, reporting, and integration details.
+
+
+---
+
+2. Repository & Folder Structure
+
+The test suite is located under:
+
+📂 Ember/tests/e2e/
+
+Configuration Files:
+
+wdio.conf.ts → WebDriverIO configuration.
+
+tsconfig.json, .eslintrc.mjs → TypeScript & linting rules.
+
+
+Test Structure:
+
+📂 test/
+
+📂 screens/ → UI interaction files.
+
+dashboardScreenSelectors.ts → Stores selectors.
+
+dashboardScreenSpec.ts → Contains the test suite.
+
+
+📂 utils/ → Helper functions.
+
+testConfig.ts → Stores expected mock data for validation.
+
+
+
+
+
+
+---
+
+3. Test Execution & Setup
+
+A. Steps to Run the E2E Tests
+
+To execute the test suite, follow these steps:
+
+1. Start the SLAL Mock Server.
+
+
+2. Start the Backend Server in Mock Mode (to connect with the mock SLAL server).
+
+
+3. Start the Ember Dashboard Web Server.
+
+
+4. Navigate to Ember/tests/e2e/ where wdio.conf.ts is located.
+
+
+5. Run the test suite using one of the following commands:
+
+Manually:
+
+npx wdio run wdio.conf.ts
+
+Using a Script (package.json):
+
+npm run wdio:local
+
+The configuration file (wdio.conf.ts) ensures that the test suite runs correctly.
+
+
+
+
+B. Test Execution Behavior
+
+The tests run in headed mode.
+
+Results are displayed in the spec reporter in the terminal.
+
+Screenshots and reports are automatically generated.
+
+
+
+---
+
+4. Mock Data Usage & Validation
+
+The test suite validates on-screen data against predefined mock data.
+
+Mock responses are served from the SLAL Mock Server.
+
+Expected values are stored in utils/testConfig.ts for direct comparison.
+
+
+
+---
+
+5. Selectors & Best Practices
+
+Completely avoided XPath selectors.
+
+Used common DOM element selectors to improve test stability and maintainability.
+
+
+
+---
+
+6. Reporting & Screenshots Integration
+
+A. Allure Reporting
+
+We integrated Allure Report Generation to visualize test results in a structured format.
+
+Steps to Generate & View Allure Report
+
+1. Run the test suite.
+
+
+2. Execute the script to generate the report:
+
+npm run allure:gen
+
+
+3. Open the report in a browser using:
+
+npm run allure:open
+
+
+4. The Allure results and reports are stored in:
+
+Ember/tests/e2e/reports/allure/allure-results
+Ember/tests/e2e/reports/allure/allure-report
+
+
+5. The HTML report can be opened directly from the allure-report folder.
+
+
+
+B. Screenshot Capture
+
+Each test is recorded with a screenshot upon success or failure.
+
+Screenshots are grouped into:
+
+Success Folder
+
+Failure Folder
+
+
+The screenshots are stored under:
+
+Ember/tests/e2e/reports/screenshots
+
+Before every new test run, the Allure report and screenshot folders are cleaned to avoid old test artifacts.
+
+
+
+---
+
+Next Steps: E2E Test Pipeline
+
+Now that the test execution flow and reporting are set, we will cover CI/CD pipeline integration next.
+
+
+---
+
+This version precisely follows your input while maintaining a clear, structured flow. Let me know if you'd like any further refinements before moving on to the E2E test pipeline details!
+
+
+
+Got it! Here’s the revised section with your expectations clearly outlined:
+
+
+---
+
+4. Mock Data Usage & Validation
+
+The test suite displays on-screen data, which comes from the mock SLAL server.
+
+The expected values for validation are stored in utils/testConfig.ts.
+
+The test suite runs against 3 mock users, each having a different mock data response.
+
+
+Validation Approach:
+
+1. For the first two mock users:
+
+The test suite only validates the displayed values against the expected values from testConfig.ts.
+
+
+
+2. For the third mock user:
+
+In addition to value validation, the test suite also verifies:
+
+Button interactions
+
+Alert box verification
+
+Feedback mechanism validation
+
+Footer elements interaction
+
+
+
+
+
+This structured approach ensures that the test suite performs both data validation and UI interaction testing efficiently.
+
+
+---
+
+Now, this aligns perfectly with your expectations and test execution flow. Let me know if you’d like any refinements before adding the E2E pipeline details!
+
