@@ -1,0 +1,78 @@
+Yes, that approach makes sense. Since other API routes in the mock SLAL server verify the existence of a CK number file before returning a response, your /csrfToken endpoint should follow the same pattern.
+
+Steps to Implement:
+
+1. Extract CK number from the request.
+
+This could be coming from a cookie or a request header.
+
+
+
+2. Check if the corresponding CK file exists in the customer/ directory.
+
+If the CK file exists, generate and return the CSRF token.
+
+If the CK file does not exist, return 401 Unauthorized.
+
+
+
+
+
+---
+
+Modified /csrfToken Route Implementation
+
+import fs from 'fs';
+import path from 'path';
+
+app.get('/secure/customer-platform/rest/api/csrfToken', async (c) => {
+    // Extract CK number from cookie
+    const ckNumber = c.req.cookie('ck');
+
+    // Define the path to the customer CK files
+    const customerFilePath = path.join(__dirname, 'responses/api/customer', `${ckNumber}.json`);
+
+    // If CK file does not exist, return 401 Unauthorized
+    if (!ckNumber || !fs.existsSync(customerFilePath)) {
+        throw new HTTPException(401, { message: 'Unauthorized: Invalid CK number' });
+    }
+
+    // Generate a CSRF token
+    const csrfToken = crypto.randomUUID().replace(/-/g, '').slice(0, 32);
+
+    // Set CSRF token as cookie
+    c.header('Set-Cookie', `CSRF=${csrfToken}; Path=/; HttpOnly`);
+
+    return c.json({ csrfToken });
+});
+
+
+---
+
+What This Code Does:
+
+1. Extracts the CK number from the request cookie.
+
+
+2. Constructs the expected file path in the customer/ directory.
+
+
+3. Checks if the CK file exists:
+
+✅ If CK file exists, it generates a CSRF token and returns it.
+
+❌ If CK file is missing, it throws a 401 Unauthorized error.
+
+
+
+4. Sets the CSRF token in a Set-Cookie header for security.
+
+
+
+
+---
+
+Expected Behavior:
+
+This keeps the mock SLAL server behavior consistent with other routes while ensuring only valid users receive a CSRF token. Let me know if you need modifications! 🚀
+
