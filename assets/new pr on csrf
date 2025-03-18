@@ -1,0 +1,96 @@
+To write an API integration test for the CSRF token endpoint and wrapper API route, similar to how it's done for the customer overview API, we need to:
+
+1. Define test cases in a test pack (mock responses for different cases).
+
+
+2. Write a loop-based test suite using testPack.forEach to iterate over different scenarios.
+
+
+3. Verify the response body (CSRF token).
+
+
+4. Verify headers, ensuring the Set-Cookie header is correctly set.
+
+
+
+
+---
+
+1. Define the Test Pack for CSRF Token API
+
+This test pack includes different cases, such as a valid request, missing cookies, or an unauthorized request.
+
+const testPack: TestPack<EmberCsrfTokenResponse> = [
+  {
+    ck: 'validCookie',
+    description: 'Valid CSRF token response',
+    response: {
+      status: 200,
+      body: {
+        csrfToken: 'mockCsrfToken',
+      },
+      headers: {
+        'set-cookie': ['CSRF=mockCsrfToken; Path=/; HttpOnly'],
+      },
+    },
+  },
+  {
+    ck: 'invalidCookie',
+    description: 'Invalid authentication cookie',
+    response: {
+      status: 401,
+      body: 'Unauthenticated',
+    },
+  },
+];
+
+
+---
+
+2. Write the API Integration Test
+
+This test will use the test pack to iterate over different scenarios.
+
+describe('GET /secure/api/csrf-token works as expected', () => {
+  testPack.forEach(({ ck, description, response: { body, status, headers } }) => {
+    apiTest(description, async ({ baseUrl }) => {
+      const res = await spec()
+        .get(`${baseUrl}/secure/api/csrf-token`)
+        .withCookies('ck', ck)
+        .expectStatus(status);
+
+      // Assert response body
+      if (typeof body === 'string') {
+        res.expectBody(body);
+      } else {
+        res.expectBody(body);
+      }
+
+      // Assert Set-Cookie header if present
+      if (headers?.['set-cookie']) {
+        res.expectHeader('set-cookie', headers['set-cookie'][0]);
+      }
+    });
+  });
+});
+
+
+---
+
+Key Points in the Integration Test
+
+1. Uses testPack.forEach to test multiple cases dynamically.
+
+
+2. Mocks valid & invalid responses to cover different cases.
+
+
+3. Asserts the response body correctly depending on whether it’s a string or an object.
+
+
+4. Verifies the Set-Cookie header for valid cases.
+
+
+
+This follows the same pattern as the customer overview API test but adapted for the CSRF token endpoint. Let me know if you need modifications!
+
