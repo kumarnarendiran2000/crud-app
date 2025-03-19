@@ -1,0 +1,26 @@
+Yes, you can soften the tone and make it more structured by mentioning the approach discussions at the beginning and a more collaborative note at the end. Here’s the refined JIRA comment:
+
+
+---
+
+Update:
+After discussions, we finalized the approach and have now completed the development and implementation for this ticket. The key updates include:
+
+Frontend: Removed Tanstack Query for CSRF token retrieval. The CSRF token is now fetched via Axios on logout, calling Ember backend instead of SLAL directly.
+
+Backend: Implemented a new csrf-token secure route handler and wrapper in Ember backend to call SLAL CSRF API. The backend processes all cookies (including CSRF and SLG CP AUTH), retains only the CSRF cookie, and sends it to the frontend.
+
+Mock SLAL Server: Updated to return a response matching the real SLAL API.
+
+Testing: Added unit tests for the new route handler and wrapper, along with API integration tests in the existing test suite.
+
+PRs: Changes are split into four PRs (frontend + backend updates, mock SLAL updates, and integration tests).
+
+
+Some PRs are still open and under review. We are addressing review comments and working towards getting them merged ASAP. Will update once done.
+
+
+---
+
+This keeps the tone professional and collaborative while still being clear and structured. Let me know if you’d like any further refinements!
+
