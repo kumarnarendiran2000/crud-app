@@ -1,0 +1,90 @@
+You're right! If headers['set-cookie'] is expected to always have cookies, then the issue is likely due to how Axios processes response headers in AWS versus locally.
+
+Possible Causes of the Issue
+
+1. AWS Lambda Axios Response Format Difference
+
+Axios sometimes returns headers differently in AWS, where headers['set-cookie'] might be a string instead of an array.
+
+
+
+2. API Gateway Behavior
+
+If AWS API Gateway is involved, it might not forward multiple Set-Cookie headers properly. API Gateway sometimes collapses multiple cookies into a single string.
+
+
+
+3. Case Sensitivity in Header Names
+
+Some AWS environments might lowercase header keys (set-cookie vs Set-Cookie).
+
+
+
+
+
+---
+
+Fix & Solution
+
+Try modifying the code to normalize the header and ensure it's treated as an array:
+
+const setCookieHeaderRaw = response.headers['set-cookie'] || response.headers['Set-Cookie']; 
+
+// Ensure it's an array
+const setCookieHeader = Array.isArray(setCookieHeaderRaw)
+  ? setCookieHeaderRaw
+  : setCookieHeaderRaw
+  ? [setCookieHeaderRaw]  // Convert string to array if needed
+  : [];
+
+const csrfCookieFromResponse = setCookieHeader.find((cookie: string) => 
+  cookie.startsWith('CSRF=')
+) || '';
+
+logger.info(`Extracted CSRF Cookie: ${csrfCookieFromResponse}`);
+
+c.header('Set-Cookie', csrfCookieFromResponse);
+
+
+---
+
+Additional Debugging Steps
+
+1. Log the headers AWS is returning
+
+logger.info(`Response Headers: ${JSON.stringify(response.headers)}`);
+
+Deploy this and check if set-cookie is present.
+
+
+
+2. Check API Gateway Behavior
+
+If using API Gateway, try logging in AWS Lambda to verify if multiple cookies are collapsed.
+
+
+
+3. Enable axios.defaults.withCredentials = true;
+
+In some cases, Axios does not store set-cookie headers properly unless this setting is enabled.
+
+
+
+
+
+---
+
+Expected Fix Behavior
+
+If set-cookie is a string, it gets wrapped in an array so .find() works.
+
+If set-cookie is undefined, it avoids breaking the code.
+
+It accounts for AWS possibly using Set-Cookie instead of set-cookie.
+
+
+
+---
+
+Try this and redeploy to AWS. If the issue persists, let me know what logger.info(JSON.stringify(response.headers)) prints in AWS!
+
