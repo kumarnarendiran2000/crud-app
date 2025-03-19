@@ -1,0 +1,96 @@
+Yes, if the CSRF cookie is always guaranteed to be present in the SLAL response, then you can remove the optional() modifier from the schema and keep the existing Array.isArray() check without using optional() or ?..
+
+
+---
+
+Final Adjusted Code:
+
+1️⃣ Wrapper (getCsrfToken.ts)
+
+Extract the CSRF cookie and return it without marking it as optional:
+
+export async function getCsrfToken(slalAxios: AxiosInstance): Promise<SlalCsrfTokenResponse> {
+  const csrfTokenApiEndpoint = '/secure/customer-platform/rest/api/csrfToken';
+  const subSegment = Xray.addNewSubSegment(`Call to ${csrfTokenApiEndpoint}`);
+
+  try {
+    const response = await slalAxios.get(csrfTokenApiEndpoint);
+
+    // Ensure `set-cookie` is treated as an array
+    const setCookieHeader = Array.isArray(response.headers['set-cookie'])
+      ? response.headers['set-cookie']
+      : [response.headers['set-cookie']];
+
+    // Extract CSRF cookie
+    const csrfCookie = setCookieHeader.find((cookie) => cookie.startsWith('CSRF='));
+
+    if (!csrfCookie) {
+      throw new Error('CSRF cookie missing from SLAL response');
+    }
+
+    return SlalCsrfTokenSchema.parse({
+      data: response.data, // CSRF token value
+      csrfCookie, // Extracted CSRF cookie
+    });
+
+  } catch (error) {
+    Xray.addError(subSegment, error);
+    throw error;
+  } finally {
+    Xray.closeSubSegment(subSegment);
+  }
+}
+
+
+---
+
+2️⃣ Schema (csrfToken.schema.ts)
+
+Update the schema to require csrfCookie instead of making it optional:
+
+export const SlalCsrfTokenSchema = z.object({
+  data: z.string(), // CSRF token value
+  csrfCookie: z.string(), // Required CSRF cookie
+});
+
+export const EmberCsrfTokenSchema = z.object({
+  data: z.string(),
+});
+
+export type SlalCsrfTokenResponse = z.infer<typeof SlalCsrfTokenSchema>;
+export type EmberCsrfTokenResponse = z.infer<typeof EmberCsrfTokenSchema>;
+
+
+---
+
+3️⃣ Handler (get-csrf-token-cookie.ts)
+
+Since csrfCookie is always expected, we don't need an if condition before setting it:
+
+app.openapi(routeSpec, async (c) => {
+  const slalAxios = c.var.axiosInstances.slalAxios;
+  const response = await getCsrfToken(slalAxios);
+
+  // Directly set the CSRF cookie in the response header
+  c.header('Set-Cookie', response.csrfCookie);
+
+  const parsedResponse: EmberCsrfTokenResponse = EmberCsrfTokenSchema.parse(response);
+  return c.json(parsedResponse.data);
+});
+
+
+---
+
+Why This Works
+
+✅ Ensures CSRF cookie is always present and removes unnecessary optional logic.
+
+✅ Uses Array.isArray() to properly handle set-cookie, avoiding truncation issues.
+
+✅ Guarantees the handler always receives a valid CSRF cookie.
+
+✅ If SLAL ever fails to return the CSRF cookie, it throws an explicit error instead of passing an undefined value.
+
+
+This will now work consistently both locally and in AWS! 🚀 Let me know if you need further refinements!
+
