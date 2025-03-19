@@ -94,3 +94,33 @@ Why This Works
 
 This will now work consistently both locally and in AWS! 🚀 Let me know if you need further refinements!
 
+
+Here’s the revised TypeScript doc comment with an accurate description of the return type:
+
+/**
+ * Calls the SLAL CSRF token endpoint to retrieve a CSRF token and its associated cookies.
+ * Extracts the CSRF token from the response body and the CSRF cookie from the `Set-Cookie` header.
+ *
+ * @param slalAxios - Axios instance configured for SLAL API calls.
+ * @returns An object containing:
+ *   - `data`: The CSRF token retrieved from the SLAL API response.
+ *   - `headers`: The complete response headers from the SLAL API.
+ *   - `csrfCookie`: The extracted CSRF cookie from the `Set-Cookie` header.
+ *
+ * @throws An error if the CSRF cookie is missing from the SLAL API response.
+ */
+export async function getCsrfToken(slalAxios: AxiosInstance): Promise<SlalCsrfTokenResponse> {
+  // Implementation...
+}
+
+Revisions:
+
+Clarified the return type: Now explicitly states that the function returns data (CSRF token), headers (full response headers), and csrfCookie (extracted CSRF cookie).
+
+Added an error condition: Specifies that an error is thrown if the CSRF cookie is missing.
+
+More precise wording: Describes that the function calls the SLAL API and extracts the relevant information.
+
+
+This should make it clear in your codebase what the function does and what it returns.
+
