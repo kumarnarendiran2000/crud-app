@@ -301,3 +301,44 @@ If set-cookie is still missing in fetch(), you may need to log response.headers 
 If the response is not structured as expected, log await response.text() instead of json().
 
 
+If startsWith doesn't work because the CSRF cookie is clumped with other cookies, you can split the string properly and extract the CSRF cookie.
+
+Updated Approach to Extract CSRF Cookie
+
+const setCookieHeader = response.headers.get('set-cookie');
+
+if (!setCookieHeader) {
+  throw new Error('Set-Cookie header is missing from the response');
+}
+
+// Ensure it's treated as an array
+const cookiesArray = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
+
+// Flatten if needed (sometimes set-cookie is a single string with multiple cookies)
+const allCookies = cookiesArray.flatMap(cookie => cookie.split(/, (?=[^;]+?=)/)); 
+
+// Find the CSRF cookie
+const csrfCookie = allCookies.find(cookie => cookie.includes('CSRF='));
+
+if (!csrfCookie) {
+  throw new Error('CSRF cookie missing from SLAL csrfToken API response');
+}
+
+console.log("Extracted CSRF Cookie:", csrfCookie);
+
+
+---
+
+Why This Works
+
+✅ Handles multiple cookies in a single string by properly splitting them using regex.
+✅ Extracts the CSRF cookie even if it’s clumped together with others.
+✅ Works for both array-based and string-based set-cookie headers.
+
+This approach ensures that even if the cookies are in one long string, the CSRF cookie is correctly extracted.
+
+
+---
+
+Does this work for your case?
+
