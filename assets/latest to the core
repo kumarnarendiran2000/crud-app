@@ -586,3 +586,60 @@ This avoids manually processing set-cookie in the wrapper and lets the handler d
 
 Would you like an alternative approach or more clarification? 🚀
 
+Since you're replacing Axios with Fetch API in your rewritten test, you can't use vi.spyOn(slalAxios, 'get') anymore because Axios is no longer involved. Instead, you need to mock the fetch function in your test.
+
+
+---
+
+How to Mock Fetch Instead of Axios Spy
+
+Since you’re calling fetch() directly in your wrapper, you need to mock the global fetch function like this:
+
+test('should call the SLAL csrf token API and return csrf token and cookies', async () => {
+  const mockResponse = {
+    data: mockSlalCsrfTokenResponse, // Mocked response body
+    headers: new Headers({ 
+      'set-cookie': 'CSRF=mockCsrfToken; Path=/; Secure; HttpOnly'
+    }),
+  };
+
+  // Mock global fetch
+  global.fetch = vi.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(mockResponse.data),
+      headers: mockResponse.headers,
+    })
+  ) as jest.Mock;
+
+  // Call the wrapper function
+  const slalCsrfResponse = await getCsrfToken(mockCookies, referer);
+
+  // Assertions
+  expect(global.fetch).toHaveBeenCalledTimes(1);
+  expect(global.fetch).toHaveBeenCalledWith(
+    `${mockApiAppConfig.baseSlalUrl}/secure/customer-platform/rest/api/csrfToken`,
+    expect.objectContaining({
+      method: 'GET',
+      headers: expect.objectContaining({
+        Cookie: expect.any(String),
+        Accept: 'application/json',
+        Referer: referer,
+      }),
+    })
+  );
+
+  expect(slalCsrfResponse).toMatchObject(mockSlalCsrfTokenResponse);
+});
+
+
+---
+
+Key Changes from Axios Spy:
+
+✅ Mocking global.fetch instead of axios.get
+✅ Returning a mock Response object with ok: true, json(), and headers
+✅ Using expect(global.fetch).toHaveBeenCalledWith() to verify request details
+
+This approach ensures your fetch-based wrapper is properly tested without Axios. 🚀
+
