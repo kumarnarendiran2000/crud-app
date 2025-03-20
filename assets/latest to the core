@@ -643,3 +643,77 @@ Key Changes from Axios Spy:
 
 This approach ensures your fetch-based wrapper is properly tested without Axios. 🚀
 
+The error you’re facing is due to the fact that your global.fetch mock is not properly matching the expected structure of a Response object.
+
+Issue:
+
+1. Mocked Response is Missing Required Properties
+The fetch function in JavaScript returns a Response object, which contains:
+
+ok (boolean)
+
+status (number)
+
+statusText (string)
+
+headers (Headers object)
+
+json() method to parse response body
+
+text(), blob(), and other methods
+
+
+In your mock, json() is correctly defined, but you're assigning headers directly from mockResponse.headers, which may not be of the correct type (Headers instance).
+
+
+2. Headers Must Be an Instance of Headers
+
+mockResponse.headers is likely an object, but fetch expects an instance of the Headers class.
+
+
+
+
+
+---
+
+Fix
+
+Modify your mock to correctly simulate a Response object:
+
+global.fetch = vi.fn(() =>
+  Promise.resolve({
+    ok: true,
+    status: 200,
+    statusText: 'OK',
+    json: () => Promise.resolve(mockResponse.data),
+    headers: new Headers(mockResponse.headers), // Convert headers to Headers instance
+  } as Response)
+);
+
+
+---
+
+Explanation of Fix
+
+ok: true → Indicates the request was successful.
+
+status: 200 & statusText: 'OK' → Simulates an HTTP 200 response.
+
+json: () => Promise.resolve(mockResponse.data) → Simulates the .json() method returning the mock response body.
+
+headers: new Headers(mockResponse.headers) → Converts mockResponse.headers into a Headers instance to match the actual fetch behavior.
+
+
+
+---
+
+Alternative Debugging Approach
+
+If you're still getting type errors, log the type of mockResponse.headers:
+
+console.log(typeof mockResponse.headers); 
+console.log(mockResponse.headers instanceof Headers);
+
+If false, you need to convert it using `new
+
+
