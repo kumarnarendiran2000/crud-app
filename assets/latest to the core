@@ -448,3 +448,141 @@ Errors during the request process are caught and rejected properly.
 This ensures that your function behaves the same way as the Axios interceptor while being adapted for fetch. 🚀
 
 
+If you want to pass the set-cookie header as is from the wrapper to the handler, you need to modify both your wrapper implementation and Zod schema accordingly.
+
+
+---
+
+Changes in the Wrapper
+
+1. Extract all headers, not just set-cookie.
+
+
+2. Pass them as an object to the handler.
+
+
+
+Wrapper Code (Modified)
+
+export async function getCsrfToken(c): Promise<SlalCsrfTokenResponse> {
+    const csrfTokenApiEndpoint = '/secure/customer-platform/rest/api/csrfToken';
+
+    const apiAppConfig: ApiConfig = await CONFIG.api();
+    const authCookieKeys = apiAppConfig.slalApiAuthCookies;
+    const { authCookieName, authCookieValue } = getAuthCookieAndValueForLegacySlalApiCalls(authCookieKeys, getCookie(c));
+
+    const headers = {
+        Cookie: constructCookieString({
+            [authCookieName]: authCookieValue,
+        }),
+        Accept: 'application/json',
+        Referer: c.req.url,
+        'Accept-Encoding': 'gzip, deflate, br',
+    };
+
+    const subSegment = Xray.addNewSubSegment(`Call to ${csrfTokenApiEndpoint}`);
+
+    try {
+        const response = await fetch(`${apiAppConfig.baseSlalUrl}${csrfTokenApiEndpoint}`, {
+            method: 'GET',
+            headers,
+        });
+
+        // Extract headers as is
+        const responseHeaders = Object.fromEntries(response.headers.entries());
+
+        // Convert to JSON body
+        const responseData = await response.json();
+
+        return SlalCsrfTokenSchema.parse({
+            data: responseData,
+            headers: responseHeaders, // Pass all headers as is
+        });
+    } catch (error) {
+        Xray.addError(subSegment, error);
+        throw error;
+    } finally {
+        Xray.closeSubSegment(subSegment);
+    }
+}
+
+
+---
+
+Changes in the Zod Schema
+
+Modify the schema to allow all headers, not just set-cookie.
+
+Schema Modification
+
+import { z } from '@hono/zod-openapi';
+
+export const SlalCsrfTokenSchema = z.object({
+    data: z.string(), // CSRF token response body should be a string
+    headers: z.record(z.string(), z.union([z.string(), z.array(z.string())])), 
+}).openapi('csrfTokenSchema');
+
+export type SlalCsrfTokenResponse = z.infer<typeof SlalCsrfTokenSchema>;
+
+Explanation
+
+headers: z.record(z.string(), z.union([z.string(), z.array(z.string())]))
+
+Why z.record(z.string(), z.union([...]))?
+
+z.record(z.string(), z.string()) → Handles single-value headers.
+
+z.record(z.string(), z.array(z.string())) → Handles multi-value headers (like set-cookie).
+
+
+This ensures we correctly preserve set-cookie as an array if it is an array, or a string otherwise.
+
+
+
+
+---
+
+Changes in the Handler
+
+Now, in the handler, you need to extract set-cookie from headers before sending it to the frontend.
+
+Handler Code (Modified)
+
+export const handleGETCsrfToken = factory.createHandler((app, path) => {
+    app.openapi(routeSpec, async (c) => {
+        const response = await getCsrfToken(c);
+
+        // Extract `set-cookie`
+        const setCookieHeader = response.headers['set-cookie'];
+        const setCookieArray = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
+
+        // Set the `Set-Cookie` header for the client
+        setCookieArray.forEach((cookie) => {
+            c.header('Set-Cookie', cookie);
+        });
+
+        return c.json(response.data);
+    });
+});
+
+
+---
+
+Summary of Fix
+
+
+---
+
+Final Thought
+
+With this approach: ✅ You send the entire response header to the handler
+✅ You handle set-cookie properly (string/array formats preserved)
+✅ Your schema supports dynamic headers without errors
+
+This avoids manually processing set-cookie in the wrapper and lets the handler deal with it.
+
+
+---
+
+Would you like an alternative approach or more clarification? 🚀
+
