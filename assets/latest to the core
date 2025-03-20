@@ -171,3 +171,133 @@ This implementation:
 
 Now, your wrapper is fully equivalent to the Axios setup, but using fetch instead. Let me know if you need any modifications!
 
+
+When switching from Axios to Fetch, there are key differences in how responses are handled:
+
+Key Differences Between Axios and Fetch
+
+1. Response Data:
+
+In Axios, response.data contains the response body.
+
+In Fetch, you need to explicitly call response.json() (for JSON) or response.text() to parse the response body.
+
+
+
+2. Response Headers:
+
+In Axios, response.headers['set-cookie'] directly gives the cookies.
+
+In Fetch, headers are accessed using response.headers.get('set-cookie'), but:
+
+Fetch does not directly support retrieving Set-Cookie headers due to security reasons (CORS policies).
+
+
+
+
+
+
+---
+
+Modifying Your Fetch Implementation
+
+Issue 1: Retrieving Response Body Correctly
+
+You need to explicitly call await response.text() if the response body is a string.
+
+Issue 2: Handling Set-Cookie Header
+
+Fetch does not allow access to Set-Cookie headers due to security restrictions in browsers.
+
+In a Node.js environment, this should work:
+
+const setCookieHeader = response.headers.get('set-cookie');
+
+If multiple cookies are sent, they may be combined into a single string instead of an array.
+
+
+
+---
+
+Fixing Your Code
+
+Try modifying your code like this:
+
+export async function getCsrfToken(c): Promise<SlalCsrfTokenResponse> {
+    const csrfTokenApiEndpoint = '/secure/customer-platform/rest/api/csrfToken';
+
+    const apiAppConfig: ApiConfig = await CONFIG.api();
+    const authCookieKeys = apiAppConfig.slalApiAuthCookies;
+
+    const { authCookieName, authCookieValue } = getAuthCookieAndValueForLegacySlalApiCalls(authCookieKeys, getCookie(c));
+
+    const headers = {
+        Cookie: constructCookieString({ [authCookieName]: authCookieValue }),
+        Accept: 'application/json',
+        Referer: c.req.url,
+        'Accept-Encoding': 'gzip, deflate, br',
+    };
+
+    const subSegment = Xray.addNewSubSegment(`Call to ${csrfTokenApiEndpoint}`);
+
+    try {
+        const response = await fetch(`${apiAppConfig.baseSlalUrl}${csrfTokenApiEndpoint}`, {
+            method: 'GET',
+            headers,
+        });
+
+        // Get response body
+        const responseData = await response.text(); // Use .text() if data is plain text
+
+        // Extract Set-Cookie headers
+        const setCookieHeader = response.headers.get('set-cookie'); // Fetch may not expose this
+
+        // Handle CSRF Cookie Extraction
+        const csrfCookie = setCookieHeader?.split(';').find(cookie => cookie.startsWith('CSRF='));
+
+        if (!csrfCookie) {
+            throw new Error('CSRF cookie missing from SLAL csrfToken API response');
+        }
+
+        return SlalCsrfTokenSchema.parse({
+            data: responseData,
+            csrfCookie,
+        });
+
+    } catch (error) {
+        Xray.addError(subSegment, error);
+        throw error;
+    } finally {
+        Xray.closeSubSegment(subSegment);
+    }
+}
+
+Key Fixes:
+
+1. Used response.text() to correctly retrieve the response body.
+
+
+2. Used response.headers.get('set-cookie') to extract the Set-Cookie header.
+
+
+3. Used .split(';') to extract the CSRF cookie.
+
+
+4. Explicitly handling the case where the CSRF cookie is missing.
+
+
+
+Potential Issues
+
+If fetch() is running in a browser, it cannot access Set-Cookie headers due to CORS.
+
+If fetch() is running in Node.js (Lambda), this should work correctly.
+
+
+Next Steps:
+
+If set-cookie is still missing in fetch(), you may need to log response.headers and check what headers are available.
+
+If the response is not structured as expected, log await response.text() instead of json().
+
+
