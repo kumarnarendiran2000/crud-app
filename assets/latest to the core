@@ -830,3 +830,23 @@ If any API behavior changes (e.g., response structure), tests should be updated 
 
 Would you like any additional refinements or more edge cases?
 
+PR Title:
+
+Workaround: Replace SLAL Axios Config with Fetch to Fix AWS Header Manipulation Issue
+
+
+---
+
+PR Description:
+
+Replaced slal-axios-config with a fetch call to fix AWS Vite build optimization issue manipulating response headers.
+
+Maintained request structure and error handling as in previous slal-axios-config, including auth cookies, headers, referer, and logging.
+
+Ensured correct extraction of the Set-Cookie header.
+
+Updated schemas, unit tests, and mock data to support fetch implementation.
+
+Created a tech debt ticket to address a permanent fix in the next sprint.
+
+
