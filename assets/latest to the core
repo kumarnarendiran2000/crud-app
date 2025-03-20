@@ -2,31 +2,29 @@ JIRA Tech Debt Ticket
 
 Title:
 
-Fix Vite Build Issue Affecting Axios HTTP Adapter in Production
+Fix Response Manipulation Issue in AWS Due to Vite Build Optimizations
 
 Description:
 
-In the AWS environment, Axios is failing to retain the HTTP adapter, causing issues with API responses, particularly truncating the set-cookie header. This issue does not occur in local development and seems to be related to Vite’s build optimizations.
+We have identified that API responses in the AWS environment are being manipulated post-deployment, specifically the set-cookie header is being truncated. This issue does not occur in local development and appears to be caused by Vite’s build optimizations.
 
 Next Steps:
 
-Investigate why Vite removes the Axios HTTP adapter in production builds.
+Investigate how Vite’s build process is modifying the response structure.
 
-Apply a fix to ensure Axios handles responses correctly.
+Identify and apply the necessary configurations or adjustments to retain the correct API response format.
 
-Validate in AWS deployment to confirm set-cookie headers are preserved.
-
-Implement a long-term solution to prevent similar issues.
+Validate the fix in AWS to ensure responses match local behavior.
 
 
-This ticket will be prioritized in the next sprint.
+This issue needs to be addressed to prevent inconsistencies between local and production environments.
 
 
 ---
 
 JIRA Comment Update:
 
-All PRs for this ticket have been merged. However, after deployment, we identified an issue where API responses in AWS are not behaving as expected, specifically with the set-cookie header being truncated. This is due to Vite’s build optimizations affecting Axios, causing the HTTP adapter to be removed.
+All PRs for this ticket have been merged. However, after deployment, we observed that API responses in AWS are being manipulated, leading to the truncation of the set-cookie header. This issue does not occur in local development and seems to be caused by Vite’s build optimizations.
 
-We are currently exploring workarounds to resolve this issue and will close this ticket with a temporary solution. A tech debt ticket has been created to investigate and implement a permanent fix in the next sprint. Will update once a stable workaround is identified and applied.
+We are currently exploring workarounds to mitigate the issue and will close this ticket once a temporary solution is applied. A tech debt ticket has been created to investigate and implement a permanent fix in the next sprint. Will update once a stable workaround is identified and applied.
 
