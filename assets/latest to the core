@@ -717,3 +717,6 @@ console.log(mockResponse.headers instanceof Headers);
 If false, you need to convert it using `new
 
 
+const mockResponseHeaders = new Headers({
+  'set-cookie': 'CSRF=mock-csrf-token; Path=/; Secure; HttpOnly',
+});
