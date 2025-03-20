@@ -342,3 +342,109 @@ This approach ensures that even if the cookies are in one long string, the CSRF 
 
 Does this work for your case?
 
+
+Yes, you can replace throw error; with return Promise.reject(error); in both error-handling cases to align more closely with the way Axios interceptors handle errors. This makes it explicit that the function will return a rejected Promise instead of throwing an exception synchronously.
+
+Updated Code with Promise.reject(error)
+
+export async function getCsrfToken(c): Promise<SlalCsrfTokenResponse> {
+  const csrfTokenApiEndpoint = `/secure/customer-platform/rest/api/csrfToken`;
+
+  const apiAppConfig: ApiConfig = await CONFIG.api();
+  const authCookieKeys = apiAppConfig.slalApiAuthCookies;
+
+  const { authCookieName, authCookieValue } = 
+    getAuthCookieAndValueForLegacySlalApiCalls(authCookieKeys, getCookie(c));
+
+  const headers = {
+    Cookie: constructCookieString({
+      [authCookieName]: authCookieValue,
+    }),
+    Accept: 'application/json',
+    Referer: c.req.url,
+    'Accept-Encoding': 'gzip, deflate, br',
+  };
+
+  const subSegment = Xray.addNewSubSegment(`Call to ${csrfTokenApiEndpoint}`);
+
+  try {
+    const response = await fetch(`${apiAppConfig.baseSlalUrl}${csrfTokenApiEndpoint}`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json(); // Try to extract JSON error response
+      } catch {
+        errorData = response.statusText; // Fallback if response is not JSON
+      }
+
+      // Handle 401 Unauthorized error
+      if (response.status === 401) {
+        // Remove sensitive data (Cookie) from error headers before logging in production
+        if (apiAppConfig.isProduction && headers.Cookie) {
+          delete headers.Cookie;
+        }
+
+        logger.warn('Unable to authenticate to SLAL with 401 status', errorData);
+        return Promise.reject(new HTTPException(401, { message: 'Unauthenticated' }));
+      }
+
+      return Promise.reject(new Error(`SLAL API error: ${response.status} - ${response.statusText}`));
+    }
+
+    const responseData = await response.json();
+    const setCookieHeader = response.headers.get('set-cookie');
+
+    // Extract CSRF cookie
+    const csrfCookie = setCookieHeader?.split(';').find((cookie) => cookie.includes('CSRF='));
+    if (!csrfCookie) {
+      return Promise.reject(new Error('CSRF cookie missing from SLAL csrfToken API response'));
+    }
+
+    return SlalCsrfTokenSchema.parse({
+      data: responseData,
+      csrfCookie,
+    });
+
+  } catch (error) {
+    // Ensure error logging does not include sensitive Cookie information
+    if (apiAppConfig.isProduction && error.config?.headers?.Cookie) {
+      delete error.config.headers.Cookie;
+    }
+
+    Xray.addError(subSegment, error);
+    return Promise.reject(error);  // Returning a rejected promise instead of throwing
+  } finally {
+    Xray.closeSubSegment(subSegment);
+  }
+}
+
+Why Use Promise.reject(error)?
+
+1. Consistency with Axios Behavior: Axios's interceptors return Promise.reject(error) rather than throwing directly, which allows better chaining in async functions.
+
+
+2. Prevents Uncaught Errors: When using throw, unhandled errors may bubble up unpredictably. Returning a rejected Promise ensures they can be handled properly with .catch() or try/catch in the calling function.
+
+
+3. Better Error Handling in Promise Chains: Using Promise.reject(error) makes error propagation smoother for functions that rely on .then() and .catch().
+
+
+
+Final Behavior
+
+If SLAL returns a 401, logs the warning and returns Promise.reject(new HTTPException(401, { message: 'Unauthenticated' }))
+
+If SLAL returns another HTTP error, rejects the Promise with the response status.
+
+If the CSRF cookie is missing, rejects with a specific error.
+
+Errors during the request process are caught and rejected properly.
+
+
+This ensures that your function behaves the same way as the Axios interceptor while being adapted for fetch. 🚀
+
+
