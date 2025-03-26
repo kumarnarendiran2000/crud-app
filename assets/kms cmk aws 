@@ -121,3 +121,161 @@ describe('S3KeysStack', () => {
 
 Let me know if you're also assigning any aliases or key policies that you want to validate — we can test for those too.
 
+Absolutely! Here's the regenerated set of separate, clear, and accurate tests for your S3KeysStack, based on everything you’ve shared — including debug values, actual template.Resources, and your coding style.
+
+
+---
+
+S3KeysStack Test (s3-keys-stack.test.ts)
+
+import { App, Duration, Template } from 'aws-cdk-lib';
+import { beforeAll, describe, expect, test } from 'vitest';
+import { S3KeysStack } from './s3-keys-stack';
+
+describe('S3KeysStack should configure KMS keys correctly', () => {
+  let template: Template;
+
+  const defaultAccount = '980688131692';
+  const defaultRegion = 'eu-west-1';
+
+  beforeAll(() => {
+    const app = new App();
+    const stack = new S3KeysStack(app, 's3-keys-stack', {
+      env: { account: defaultAccount, region: defaultRegion },
+      terminationProtection: true,
+    });
+
+    template = Template.fromStack(stack);
+  });
+
+  // ----------------------------
+  // KMS Key Creation Checks
+  // ----------------------------
+
+  test('should create a KMS key for S3 code bucket encryption', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      EnableKeyRotation: true,
+      Description: 'Encryption key for code stored in S3 buckets',
+    });
+  });
+
+  test('should create a KMS key for S3 logs bucket encryption', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      EnableKeyRotation: true,
+      Description: 'Encryption key for log files in s3 buckets',
+    });
+  });
+
+  // ----------------------------
+  // Resource Policy: Code Key
+  // ----------------------------
+
+  test('should attach resource policy allowing CloudFront and Lambda to decrypt the code bucket key', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: expect.arrayContaining([
+          expect.objectContaining({
+            Sid: 'Statement for code decryption',
+            Action: ['kms:GenerateDataKey', 'kms:Decrypt'],
+            Principal: {
+              Service: ['cloudfront.amazonaws.com', 'lambda.amazonaws.com'],
+            },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': defaultAccount },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('should attach resource policy allowing AWS Config to encrypt using the code bucket key', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: expect.arrayContaining([
+          expect.objectContaining({
+            Sid: 'Statement for code encryption',
+            Action: ['kms:GenerateDataKey', 'kms:Encrypt'],
+            Principal: {
+              Service: 'config.amazonaws.com',
+            },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': defaultAccount },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  // ----------------------------
+  // Resource Policy: Logs Key
+  // ----------------------------
+
+  test('should attach resource policy allowing CloudWatch to decrypt the logs bucket key', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: expect.arrayContaining([
+          expect.objectContaining({
+            Sid: 'Statement for log decryption',
+            Action: ['kms:GenerateDataKey', 'kms:Decrypt'],
+            Principal: {
+              Service: 'cloudwatch.amazonaws.com',
+            },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': defaultAccount },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('should attach resource policy allowing any principal to encrypt using the logs bucket key', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: expect.arrayContaining([
+          expect.objectContaining({
+            Sid: 'Statement for log encryption',
+            Action: ['kms:GenerateDataKey', 'kms:Encrypt'],
+            Principal: { AWS: '*' },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': defaultAccount },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+});
+
+
+---
+
+Summary of What This Covers:
+
+[x] Separate test per key and action (good for CI clarity)
+
+[x] Covers EnableKeyRotation, Description, and key policies
+
+[x] Matches your debug data exactly (principal, sid, condition)
+
+[x] No use of loose Match.objectLike() unless necessary (per your request)
+
+[x] Aligned with your structure and stack config
+
+
+
+---
+
+Let me know if you want to:
+
+Add alias checks (AWS::KMS::Alias)
+
+Add Retain policy checks
+
+Add shared helper for DRY test logic
+
+
+Ready to plug this in and go!
+
