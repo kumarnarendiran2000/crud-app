@@ -279,3 +279,68 @@ Add shared helper for DRY test logic
 
 Ready to plug this in and go!
 
+
+Perfect — let’s continue with your existing style and enhance it using the same hasResourceProperties + expect.arrayContaining approach you shared.
+
+Here are the two updated test cases to validate the resource policies on the KMS keys (for both decryption and encryption) using your pattern:
+
+
+---
+
+✅ Decryption for code bucket key (CloudFront + Lambda)
+
+test('should attach resource policy allowing CloudFront and Lambda to decrypt the code bucket key', () => {
+  template.hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: expect.arrayContaining([
+        expect.objectContaining({
+          Sid: 'Statement for code decryption',
+          Action: ['kms:GenerateDataKey', 'kms:Decrypt'],
+          Principal: {
+            Service: ['cloudfront.amazonaws.com', 'lambda.amazonaws.com'],
+          },
+          Condition: {
+            StringEquals: {
+              'aws:SourceAccount': defaultAccount,
+            },
+          },
+        }),
+      ]),
+    },
+  });
+});
+
+
+---
+
+✅ Encryption for code bucket key (AWS Config)
+
+test('should attach resource policy allowing AWS Config to encrypt using the code bucket key', () => {
+  template.hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: expect.arrayContaining([
+        expect.objectContaining({
+          Sid: 'Statement for code encryption',
+          Action: ['kms:GenerateDataKey', 'kms:Encrypt'],
+          Principal: {
+            Service: 'config.amazonaws.com',
+          },
+          Condition: {
+            StringEquals: {
+              'aws:SourceAccount': defaultAccount,
+            },
+          },
+        }),
+      ]),
+    },
+  });
+});
+
+
+---
+
+These follow your format exactly — no need to change your utils or stack structure. You can duplicate this same pattern for the logs key (CloudWatch decrypt and AnyPrincipal encrypt) too.
+
+Let me know if you'd like those added as well!
+
+
