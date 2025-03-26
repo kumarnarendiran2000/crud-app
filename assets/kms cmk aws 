@@ -1,0 +1,123 @@
+Absolutely! Here's your s3-keys-stack.test.ts test file inline, written using CDK's assertions and your existing test style (like the Route53 stack test):
+
+import { App } from 'aws-cdk-lib'
+import { Match, Template } from 'aws-cdk-lib/assertions'
+import { beforeAll, describe, expect, test } from 'vitest'
+
+import { S3KeysStack } from './s3-keys-stack'
+
+describe('S3KeysStack should configure KMS keys correctly', () => {
+  let template: Template
+
+  const defaultAccount = '980688131692'
+  const environment = 'poc'
+
+  beforeAll(() => {
+    const app = new App()
+
+    const stack = new S3KeysStack(app, 's3-keys-stack', {
+      env: { account: defaultAccount, region: 'eu-west-1' },
+    })
+
+    template = Template.fromStack(stack)
+  })
+
+  test('should create a KMS key for S3 code bucket encryption', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      EnableKeyRotation: true,
+      Description: Match.stringLikeRegexp('code.*s3 bucket'),
+    })
+  })
+
+  test('should create a KMS key for S3 logs bucket encryption', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      EnableKeyRotation: true,
+      Description: Match.stringLikeRegexp('log files.*s3 buckets'),
+    })
+  })
+
+  test('should attach a resource policy allowing CloudFront and Lambda decrypt access to code bucket key', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['kms:Decrypt']),
+            Principal: Match.objectLike({
+              Service: Match.arrayWith([
+                'cloudfront.amazonaws.com',
+                'lambda.amazonaws.com',
+              ]),
+            }),
+          }),
+        ]),
+      }),
+    })
+  })
+
+  test('should attach a resource policy allowing CloudWatch decrypt access to logs bucket key', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['kms:Decrypt']),
+            Principal: Match.objectLike({
+              Service: 'cloudwatch.amazonaws.com',
+            }),
+          }),
+        ]),
+      }),
+    })
+  })
+})
+
+Let me know if you’d like tests for other permissions or edge cases (e.g. alias, pending window, etc).
+
+
+
+
+
+
+
+
+Got it! Let’s add the full template.hasResourceProperties check just like your earlier bucket tests. Here's the updated test block with expanded resource properties validation for both s3CodeKey and s3LogsKey:
+
+import { App } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { describe, test, expect } from 'vitest';
+import { S3KeysStack } from './s3-keys-stack';
+import { validateStackResource } from './.stackTestUtils';
+
+describe('S3KeysStack', () => {
+  const defaultAccount = '980688131692';
+  const defaultRegion = 'eu-west-1';
+
+  const app = new App();
+  const stack = new S3KeysStack(app, 'S3KeysStack', {
+    env: { account: defaultAccount, region: defaultRegion },
+  });
+
+  const template = Template.fromStack(stack);
+
+  test('should have a KMS key for S3 code bucket with full properties', () => {
+    validateStackResource(template, 'AWS::KMS::Key', /s3CodeKey/, 1);
+
+    template.hasResourceProperties('AWS::KMS::Key', {
+      EnableKeyRotation: true,
+      Description: 'Encryption key for code stored in S3 buckets',
+      PendingWindowInDays: 7,
+    });
+  });
+
+  test('should have a KMS key for S3 logs bucket with full properties', () => {
+    validateStackResource(template, 'AWS::KMS::Key', /s3LogsKey/, 1);
+
+    template.hasResourceProperties('AWS::KMS::Key', {
+      EnableKeyRotation: true,
+      Description: 'Encryption key for log files in s3 buckets',
+      PendingWindowInDays: 7,
+    });
+  });
+});
+
+Let me know if you're also assigning any aliases or key policies that you want to validate — we can test for those too.
+
