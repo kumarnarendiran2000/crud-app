@@ -362,3 +362,77 @@ template.hasResourceProperties('AWS::KMS::Key', Match.objectLike({
     ]),
   }),
 }));
+
+Thanks! The error is likely due to multiple KMS keys in the template (code key + logs key), and hasResourceProperties doesn’t know which one to match. Since you're using hasResourceProperties with a broad resource type (AWS::KMS::Key), it tries to match any of them, but fails because your expectation doesn’t cover all policies exactly.
+
+Let’s fix this by filtering only the relevant key using a helper — similar to validateStackResource — so you can directly test properties of only the code key or logs key.
+
+
+---
+
+Step 1: Update your test to use your helper
+
+Change:
+
+template.hasResourceProperties('AWS::KMS::Key', {
+  KeyPolicy: { ... }
+});
+
+To:
+
+const codeKey = validateStackResource(
+  template,
+  'AWS::KMS::Key',
+  2, // total keys
+  0, // 0th one is code key
+);
+expect(codeKey.Properties.KeyPolicy).toEqual({
+  Version: '2012-10-17',
+  Statement: expect.arrayContaining([
+    expect.objectContaining({
+      Sid: 'Statement for code decryption',
+      Action: ['kms:GenerateDataKey', 'kms:Decrypt'],
+      Principal: {
+        Service: ['cloudfront.amazonaws.com', 'lambda.amazonaws.com'],
+      },
+      Condition: {
+        StringEquals: {
+          'aws:SourceAccount': defaultAccount,
+        },
+      },
+    }),
+  ]),
+});
+
+Do the same for the config encryption test but with 1 as the rsrcPosition to target the logs key if needed.
+
+
+---
+
+Step 2: Keep validateStackResource as it is
+
+You already have this in .stackTestUtils.ts:
+
+export function validateStackResource(
+  template: Template,
+  resourceType: string,
+  resourceCount: number,
+  rsrcPosition: number,
+  idRegEx: RegExp
+) {
+  const resources = template.findResources(resourceType);
+  expect(Object.keys(resources).length).toEqual(resourceCount);
+  const resourceId = Object.keys(resources)[rsrcPosition];
+  expect(resourceId).toMatch(idRegEx);
+  return resources[resourceId];
+}
+
+Just pass a regex like /^embers3CodeKey/ or /^embers3LogsKey/.
+
+
+---
+
+This ensures you're validating one specific KMS key (either code or logs), not both at once — avoiding ambiguity and matching problems.
+
+Would you like me to write the final working code for both?
+
