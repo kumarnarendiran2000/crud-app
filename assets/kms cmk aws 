@@ -524,3 +524,47 @@ Let me know if you also want to confirm TargetKeyId for each alias in these test
 
 
 
+Yes, it’s definitely appropriate and recommended to add a separate test for that kms:* action statement. Here's why and how:
+
+Why add a separate test for kms:* root principal?
+
+1. Clarity – This statement represents a general administrative access to the key, usually for root or account-wide access. It's different in intent from scoped policies for services like Lambda or Config.
+
+
+2. Separation of concerns – You’re already testing decryption and encryption statements for services separately. This one should be tested on its own to validate key admin permissions.
+
+
+
+
+---
+
+✅ Test structure suggestion:
+
+test('should attach key policy with kms:* permissions to root account', () => {
+  template.hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'kms:*',
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': Match.arrayWith([
+                '',
+                Match.arrayWith([
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  `:iam::${defaultAccount}:root`,
+                ]),
+              ]),
+            },
+          },
+          Resource: '*',
+        }),
+      ]),
+    },
+  });
+});
+
+This matches your image (image 2) and fits perfectly into your test style (like image 1). Let me know if you want to also test this for both code and logs bucket keys explicitly – or just the presence of this one root-level admin statement across all keys.
+
