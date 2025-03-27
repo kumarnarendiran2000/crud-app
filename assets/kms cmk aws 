@@ -484,3 +484,43 @@ Verifies that both expected aliases (alias/s3CodeKey and alias/s3LogsKey) exist 
 
 Let me know if you also want to validate which key each alias is pointing to via TargetKeyId.
 
+
+Great! Based on your existing test structure, here are two separate tests for validating the code bucket alias and logs bucket alias individually—just like your current validateStackResource tests:
+
+test('should create a KMS alias for S3 code bucket key', () => {
+  validateStackResource(
+    template,
+    'AWS::KMS::Alias',
+    2, // Total aliases expected
+    0, // Position of code key alias
+  );
+
+  template.hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: 'alias/s3CodeKey',
+  });
+});
+
+test('should create a KMS alias for S3 logs bucket key', () => {
+  validateStackResource(
+    template,
+    'AWS::KMS::Alias',
+    2, // Total aliases expected
+    1, // Position of logs key alias
+  );
+
+  template.hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: 'alias/s3LogsKey',
+  });
+});
+
+Why this works:
+
+You're checking AWS::KMS::Alias resources individually by index (0 and 1).
+
+You're asserting the specific alias names using hasResourceProperties.
+
+
+Let me know if you also want to confirm TargetKeyId for each alias in these tests.
+
+
+
