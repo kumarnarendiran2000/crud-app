@@ -436,3 +436,51 @@ This ensures you're validating one specific KMS key (either code or logs), not b
 
 Would you like me to write the final working code for both?
 
+Here’s the proper test structure to validate the creation of two KMS aliases (one for the code bucket and one for the logs bucket), assuming you're using validateStackResource to confirm their presence, and template.hasResourceProperties to assert specific alias names.
+
+import { App } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { beforeAll, describe, expect, test } from 'vitest';
+import { validateStackResource } from './stackTestUtils';
+import { S3KeysStack } from './s3-keys-stack';
+
+describe('S3KeysStack should configure KMS aliases correctly', () => {
+  let template: Template;
+  const defaultAccount = '980688131692';
+
+  beforeAll(() => {
+    const app = new App();
+    const stack = new S3KeysStack(app, 's3-keys-stack', {
+      env: { account: defaultAccount, region: 'eu-west-1' },
+      terminationProtection: true,
+    });
+    template = Template.fromStack(stack);
+  });
+
+  test('should create 2 KMS aliases: one for code bucket and one for logs bucket', () => {
+    validateStackResource(
+      template,
+      'AWS::KMS::Alias',
+      2, // One alias for code key and one for logs key
+      0,
+    );
+
+    template.hasResourceProperties('AWS::KMS::Alias', {
+      AliasName: 'alias/s3CodeKey',
+    });
+
+    template.hasResourceProperties('AWS::KMS::Alias', {
+      AliasName: 'alias/s3LogsKey',
+    });
+  });
+});
+
+What this test does:
+
+Verifies that exactly 2 aliases are present (validateStackResource).
+
+Verifies that both expected aliases (alias/s3CodeKey and alias/s3LogsKey) exist via hasResourceProperties.
+
+
+Let me know if you also want to validate which key each alias is pointing to via TargetKeyId.
+
