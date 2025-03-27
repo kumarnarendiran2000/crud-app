@@ -1,0 +1,14 @@
+Got it! Here's the updated version without "we":
+
+
+---
+
+Workaround implemented — replaced the axios call with a fetch call to address the issue mentioned in the last comment. The fix is working as expected in both the AWS deployed environment and local setup. Changes have been tested, verified, and merged to main.
+
+Moving this ticket to Done.
+
+
+---
+
+Let me know if you want to tweak the tone further.
+
