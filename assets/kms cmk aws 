@@ -568,3 +568,6 @@ test('should attach key policy with kms:* permissions to root account', () => {
 
 This matches your image (image 2) and fits perfectly into your test style (like image 1). Let me know if you want to also test this for both code and logs bucket keys explicitly – or just the presence of this one root-level admin statement across all keys.
 
+test('should enable termination protection on the stack', () => {
+  expect(stack.terminationProtection).toBe(true);
+});
