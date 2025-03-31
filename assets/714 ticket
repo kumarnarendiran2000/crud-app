@@ -1,0 +1,52 @@
+Here’s a simple and clear PR title and description for your GitHub Actions fix, along with a section to attach the test evidence:
+
+
+---
+
+PR Title:
+
+Prevent Job Cancellation in Subgroups by Setting fail-fast: false in Matrix Jobs
+
+
+---
+
+PR Description:
+
+This PR addresses the issue where a failure in one job of a matrix-based subgroup (e.g., API, Dashboard, Edge Lambda) cancels the remaining jobs prematurely in our GitHub Actions CD Package and Stage pipeline.
+
+Fix Implemented:
+
+Added strategy: fail-fast: false to the following matrix jobs:
+
+upload-and-deploy-api
+
+upload-and-deploy-dashboard
+
+upload-and-deploy-edge-lambda
+
+
+
+This change ensures that all jobs within a subgroup continue running and log their results independently, even if one fails.
+
+
+---
+
+Test Evidence:
+
+Before the Fix:
+
+Jobs in a subgroup were getting cancelled if one failed.
+(Attach or link to the screenshot/file named pre-fix-job-cancellation.png or similar)
+
+
+After the Fix:
+
+Each job now completes execution, logs failure/success independently, and no cancellations observed.
+(Attach or link to the screenshot/file named post-fix-jobs-run-successfully.png or similar)
+
+
+
+---
+
+Let me know if you want help writing a GitHub comment to link this PR to the Jira ticket (e.g., EMBEDR-714).
+
