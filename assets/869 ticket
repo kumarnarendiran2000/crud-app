@@ -1,0 +1,36 @@
+Yes, that's a great approach — making description and acceptance criteria imperative (e.g., "Should return...", "Must align with...") keeps them action-focused and clear. Keeping them short, implicit, and precise also helps everyone stay on the same page without too much noise.
+
+Here’s how you can phrase them:
+
+
+---
+
+Ticket Description
+
+The CSRF token API should return the token as a plain string, not JSON. Response content type and schema must reflect this. Header schema (for set-cookie) should also align with the actual response.
+
+
+---
+
+Acceptance Criteria
+
+Response must be returned as text/plain with the token as raw string
+
+OpenAPI response schema must match updated content type and format
+
+set-cookie header should be accurately typed in the schema
+
+Remove unused or misleading response codes (502, default)
+
+
+
+---
+
+For ticket comment before closing, you could say:
+
+> Aligned the CSRF token API response with expected output — updated content type, response schema, and headers definition. Verified and merged to main. Closing this ticket.
+
+
+
+Let me know if you want to add testing or frontend context too.
+
