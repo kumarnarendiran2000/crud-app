@@ -89,3 +89,11 @@ Let me know if you want a version for the Jira ticket as well!
 
 
 
+Sure! Here's a short and sweet comment you can use while moving the ticket to Done:
+
+> Fix implemented and merged to main. Matrix job cancellation issue resolved with fail-fast: false. Verified with before/after pipeline runs.
+
+
+
+Let me know if you'd like to tag anyone or link the PR!
+
