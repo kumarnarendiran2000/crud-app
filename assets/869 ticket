@@ -34,3 +34,35 @@ For ticket comment before closing, you could say:
 
 Let me know if you want to add testing or frontend context too.
 
+11111111111
+
+Sure! Here's a short and clear Ticket Description and Acceptance Criteria tailored to your update:
+
+
+---
+
+Ticket Description
+
+The CSRF token API response previously returned a plain string but was documented with a application/json content-type in the OpenAPI spec, causing a mismatch. This update aligns the OpenAPI documentation with the actual behavior by changing the response content-type to text/plain and returning the token using c.text().
+
+Additionally, the response schema and Set-Cookie header schema were updated to match the actual output. Unused status codes (502, default) were removed from the spec.
+
+
+---
+
+Acceptance Criteria
+
+[x] Response content-type is text/plain in the OpenAPI spec.
+
+[x] CSRF token string is returned using c.text() instead of c.json().
+
+[x] Response schema and header schema correctly describe the returned token and Set-Cookie.
+
+[x] Unused response codes (502, default) are removed from the route spec.
+
+[x] No frontend changes required — the contract remains compatible.
+
+
+Let me know if you want a summary message to drop in the ticket too.
+
+
