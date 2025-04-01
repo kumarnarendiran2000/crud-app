@@ -65,4 +65,27 @@ Acceptance Criteria
 
 Let me know if you want a summary message to drop in the ticket too.
 
+5672ueue8e
+
+Absolutely! Here's the revised PR Description with that point smoothly included:
+
+
+---
+
+PR Description
+
+Updated OpenAPI spec to reflect text/plain content-type.
+
+Aligned response schema and header schema to accurately describe the returned data and Set-Cookie header.
+
+Removed unnecessary response codes (502, default) for cleaner spec.
+
+Used c.text() instead of c.json() to return raw string token.
+
+No frontend changes required — API now matches the actual contract.
+
+
+Let me know if you want a version for the Jira ticket as well!
+
+
 
