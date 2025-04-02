@@ -97,3 +97,19 @@ Sure! Here's a short and sweet comment you can use while moving the ticket to Do
 
 Let me know if you'd like to tag anyone or link the PR!
 
+Here’s a clean and professional comment you can drop to close the ticket:
+
+
+---
+
+Fix has been implemented and verified — aligned the CSRF token API response content-type and schema (both data and headers) with the OpenAPI specification. The fix has been approved and merged to main.
+
+Closing the ticket now.
+
+Thanks!
+
+
+---
+
+Let me know if you want a more casual or more detailed version!
+
