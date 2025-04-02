@@ -1,0 +1,18 @@
+Sure! Here's a polished and PR-friendly commit message or PR description that clearly explains everything:
+
+
+---
+
+PR Description / Commit Message:
+
+chore(hono): downgrade hono to 4.7.2 and lock version due to breaking change in AWS handler response
+
+- Downgraded `hono` and `@hono/aws-lambda` from 4.7.5 to 4.7.2
+- Removed `^` from version to prevent auto-upgrades temporarily
+- This was done because newer versions of Hono return either `headers` or `multiValueHeaders` (not both)
+- In our test setup, based on the mocked request, only `multiValueHeaders` is returned — causing failures where `response.headers.location` was accessed
+- A backlog ticket has been created to properly upgrade and refactor the tests to use `multiValueHeaders` safely
+- For now, this ensures the currency update branch passes and can proceed
+
+Let me know if you want to link the ticket directly or tag a reviewer!
+
