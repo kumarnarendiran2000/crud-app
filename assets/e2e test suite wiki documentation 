@@ -1,0 +1,173 @@
+Perfect. Here's the updated wiki content with all the latest changes incorporated — clean, developer-focused, and follows your reviewer’s feedback step by step:
+
+
+---
+
+E2E Test Suite – Ember Dashboard
+
+The E2E test suite verifies that the Ember Dashboard UI and data rendering behave as expected. It tests displayed values like amounts, labels, and functional UI elements by loading the application in a real browser and checking if what's rendered matches expected conditions.
+
+When executed, the suite opens the Ember Dashboard in a browser, with data served from a mock SLAL server, and runs end-to-end checks across supported user flows.
+
+
+---
+
+Why SLAL Mock Server?
+
+We use the SLAL Mock Server because:
+
+The real SLAL server requires authentication and is not accessible from GitHub Actions or CI environments.
+
+Using the mock ensures consistent and uniform responses across local and CI environments, allowing predictable test outcomes.
+
+
+
+---
+
+Test Suite Folder Structure
+
+The E2E test suite can be found under:
+
+ember/tests/e2e/
+
+Folder Breakdown:
+
+ember/tests/e2e/
+│
+├── wdio.conf.ts
+│     The WebDriverIO configuration file that sets up the test runner, reporters, and browser capabilities.
+│
+├── test/
+│   ├── screens/
+│   │   ├── dashboardScreenSelectors.ts
+│   │   │     Stores all the **DOM selectors** for dashboard elements like buttons, alerts, and footer links.
+│   │   │     These selectors are used in the test logic to interact with and verify UI components.
+│   │   │
+│   │   └── dashboardScreenSpec.ts
+│   │         The **main test suite file**. It defines the user scenarios, validation logic, and test flows.
+│   │
+│   ├── utils/
+│   │   ├── testConfig.ts
+│   │   │     Stores **expected values for test users** like total payment, latest payment, etc.
+│   │   │     These values are used as the reference for validating what appears on the dashboard.
+│   │   │
+│   │   └── [other helper utilities]
+│   │         Reusable functions or constants used by the tests.
+
+
+---
+
+Test Execution Steps
+
+To run the test suite, follow these steps:
+
+1. Ensure the following are running:
+
+SLAL Mock Server
+
+Backend Server (in mock mode)
+
+Ember Frontend Dashboard
+
+
+
+2. From the root of the Ember repo, run:
+
+
+
+pnpm --filter e2e-tests test
+
+This will:
+
+Launch the browser
+
+Load the Ember Dashboard
+
+Execute the test cases
+
+Log real-time results to the terminal via the spec reporter
+
+
+
+> A screenshot of the terminal output (spec reporter) can be attached here for reference.
+
+
+
+
+---
+
+Test Reports and Screenshots
+
+Screenshots
+
+Screenshots of each test run (grouped by pass/fail status) are automatically captured.
+
+Path:
+
+ember/tests/e2e/reports/screenshots/
+
+
+Allure Report
+
+Allure is used for structured visual test reports with detailed step-wise breakdown and screenshots.
+
+Generated files are saved under:
+
+ember/tests/e2e/reports/allure/allure-results
+ember/tests/e2e/reports/allure/allure-report
+
+
+To generate and open the Allure report:
+
+pnpm run allure:gen     // Generates the report
+pnpm run allure:open    // Opens it in browser
+
+You can also open index.html inside allure-report/ directly in your browser.
+
+
+---
+
+Selectors & Best Practices
+
+Selector Guidelines
+
+To ensure stability and maintainability:
+
+Always use common DOM selectors (like aria-label, data-testid)
+
+Avoid XPath selectors
+
+
+✅ Preferred:
+
+'[aria-label="Manage your pension"]'
+'[data-testid="alert-box"]'
+
+❌ Avoid:
+
+'//div[@class="some-css"]/span[2]'
+'//*[@role="alert"][contains(text(), "something")]'
+
+Following these practices helps avoid flaky tests and makes debugging easier.
+
+
+---
+
+Developer Responsibility
+
+This document is primarily for Ember developers.
+
+If you're working on any ticket that introduces UI changes, you are expected to:
+
+Update existing E2E tests accordingly
+
+Add new test cases to cover the changes
+
+
+This ensures the test suite stays aligned with the actual application behavior.
+
+
+---
+
+Let me know when you're ready to plug in the screenshots or proceed with the final formatting for publishing!
+
