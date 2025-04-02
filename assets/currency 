@@ -71,3 +71,19 @@ Let’s discuss this during sprint planning to prioritize accordingly.
 
 Let me know if you want this in Jira format, GitHub issue template, or Slack-style message!
 
+Got it! Here's a simpler version of the description with your point:
+
+
+---
+
+Description:
+
+In the latest version of the @hono/aws-lambda package (>=4.7.3), the response from handle() includes only one of headers or multiValueHeaders, not both.
+
+In our tests, based on our mocked request, the response includes only multiValueHeaders. This caused failures where we were previously accessing values from response.headers.
+
+
+---
+
+Short and clear — let me know if you want to plug this into your actual ticket!
+
