@@ -171,3 +171,26 @@ This ensures the test suite stays aligned with the actual application behavior.
 
 Let me know when you're ready to plug in the screenshots or proceed with the final formatting for publishing!
 
+Perfect. Here's the updated opening section with your points about the pipeline, browser modes, and triggers — written as a natural, continuous intro paragraph:
+
+
+---
+
+E2E Test Suite – Ember Dashboard
+
+The E2E test suite verifies that the Ember Dashboard UI and data rendering behave as expected. It checks key elements such as amount values, text labels, and UI component behaviors by opening the dashboard in a real browser and validating against predefined mock data.
+
+When triggered locally, the test suite runs in headed mode — it opens a visible browser window, interacts with the app, and logs results to the terminal. In the GitHub Actions pipeline, the same test suite runs in headless mode (no visible browser) and is triggered in two ways:
+
+On every PR approval, and
+
+On a nightly cron job at midnight.
+
+
+After execution, the pipeline automatically generates the Allure Report and captures screenshots, both of which are uploaded as artifacts and cleaned up when the associated branch is deleted.
+
+
+---
+
+Let me know when you want the full updated wiki with this incorporated at the top!
+
