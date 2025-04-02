@@ -1,0 +1,86 @@
+Thanks, that’s a clear and solid problem statement. Here's how we can solve it in a clean and flexible way.
+
+
+---
+
+Problem
+
+Most links open in a new tab → current switchToTabAndVerify() works fine.
+
+BUT these 3 links:
+
+Contact Us
+
+FAQs
+
+Further Support
+
+
+now open in the same tab, and we need to:
+
+Check the new URL in the same tab
+
+Navigate back to the original page
+
+
+
+
+---
+
+Solution
+
+We'll enhance your footerLinkSelectors like this:
+
+Step 1: Add a sameTab flag
+
+{
+  selector: "//*[@role='link'][contains(., 'Contact Us')]",
+  expectedUrlContains: '/contact',
+  sameTab: true
+},
+
+Step 2: Create a new helper
+
+Let’s call it verifyInSameTabAndGoBack.ts:
+
+export async function verifyInSameTabAndGoBack(expectedUrlContains: string) {
+  await browser.waitUntil(async () => (await browser.getUrl()).includes(expectedUrlContains), {
+    timeout: 10000,
+    timeoutMsg: `Expected URL to contain ${expectedUrlContains}, but got ${await browser.getUrl()}`,
+  });
+
+  await browser.back(); // Navigate back to the original screen
+}
+
+
+---
+
+Step 3: Update the Loop Logic
+
+In your loop inside dashboardScreenSpec.ts, replace:
+
+await switchToTabAndVerify(link.expectedUrlContains, originalWindow);
+
+with:
+
+if (link.sameTab) {
+  await verifyInSameTabAndGoBack(link.expectedUrlContains);
+} else {
+  await switchToTabAndVerify(link.expectedUrlContains, originalWindow);
+}
+
+
+---
+
+Final Result: Fully Backward Compatible
+
+Old links that open in a new tab still use switchToTabAndVerify
+
+Updated ones (like Contact Us) use verifyInSameTabAndGoBack
+
+
+
+---
+
+Want me to write this in exact code and share? Or you're good to implement from here?
+
