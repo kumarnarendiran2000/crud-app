@@ -16,3 +16,58 @@ chore(hono): downgrade hono to 4.7.2 and lock version due to breaking change in 
 
 Let me know if you want to link the ticket directly or tag a reviewer!
 
+
+Perfect — here’s a clear and professional version of your backlog ticket description and status update you can use:
+
+
+---
+
+Backlog Ticket Title:
+
+Upgrade hono to latest version and update tests to handle multiValueHeaders
+
+
+---
+
+Description:
+
+In the latest version of the @hono/aws-lambda package (>=4.7.3), the response returned from the handle() function includes only one of headers or multiValueHeaders, depending on the request type — not both. This change was introduced by the Hono team to align with AWS Lambda/ API Gateway response standards and avoid header duplication issues.
+
+Currently, some of our tests rely on accessing headers via response.headers.location, which breaks due to the absence of the headers field.
+
+
+---
+
+What needs to be done:
+
+Upgrade hono and @hono/aws-lambda to the latest version (>=4.7.5)
+
+Refactor test cases (and any other usages) to extract values from multiValueHeaders instead:
+
+response.multiValueHeaders?.[key]?.[0]
+
+Optionally, introduce a helper function to abstract header access and maintain backward compatibility.
+
+
+
+---
+
+Status & Temporary Fix:
+
+For now, we’ve downgraded hono from 4.7.5 to 4.7.2 in the currency update branch and removed the ^ symbol from package.json to lock the version and avoid auto-upgrades.
+
+The fix has been pushed to the currency-update branch and handed over to Sundar for merge and continuation.
+
+
+---
+
+Next Steps:
+
+This ticket is logged to track and revisit the upgrade + test refactoring work.
+Let’s discuss this during sprint planning to prioritize accordingly.
+
+
+---
+
+Let me know if you want this in Jira format, GitHub issue template, or Slack-style message!
+
