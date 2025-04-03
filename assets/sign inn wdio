@@ -1,0 +1,40 @@
+Perfect — using this XPath selector is absolutely valid:
+
+//*[text()="Dismiss"]
+
+Why it works:
+
+It matches any element (*) whose exact visible text is "Dismiss".
+
+In your case, that targets the dismiss popup button reliably.
+
+
+
+---
+
+WebdriverIO usage:
+
+Selector definition:
+
+export const errorOverlaySelectors = {
+  dismissButton: '//*[text()="Dismiss"]',
+};
+
+Dismiss handler in test:
+
+const dismissBtn = await $(errorOverlaySelectors.dismissButton);
+if (await dismissBtn.isDisplayed()) {
+  await dismissBtn.click();
+}
+
+
+---
+
+Bonus:
+
+If you ever want to match partial text (like just “Dism”), you could use:
+
+'//*[contains(text(), "Dism")]'
+
+Let me know if you want this wrapped into a reusable utility or paired with minimized popup handling too!
+
