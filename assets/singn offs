@@ -12,3 +12,48 @@ Moving this ticket to Done.
 
 Let me know if you'd like a slightly more formal or casual tone!
 
+Perfect! Here's the updated Jira ticket with your clarifications:
+
+
+---
+
+Title:
+
+Fix E2E Test Suite Failures Due to Recent App Behavior Changes (Footer, Top Actions, Logout)
+
+
+---
+
+Description:
+
+The existing WebDriverIO E2E test suite is currently failing due to recent functional changes in the Ember Dashboard app. Specifically:
+
+Certain Footer links (e.g., Contact Us, FAQs, Further Support) now open in the same tab, requiring a different validation and navigation flow.
+
+Similar adjustments are needed for Top Action links.
+
+Logout behavior has also changed and requires test case updates to ensure it reflects the new flow.
+
+
+This ticket is to update the relevant test cases to align with the current app behavior and restore a stable test state.
+
+
+---
+
+Acceptance Criteria:
+
+[ ] All updated E2E test cases for Footer links, Top Action links, and Logout flow reflect the current application behavior
+
+[ ] All E2E tests pass locally
+
+[ ] Once this fix is merged, the pending GitHub Actions PR (for automated pipeline runs) can be pushed with confidence
+
+[ ] The pipeline will run green on GitHub Actions after that PR is merged
+
+
+
+---
+
+Let me know if you want this tied to a parent epic or if you'd like me to generate subtasks for Footer, Top Links, and Logout separately!
+
+
