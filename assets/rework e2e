@@ -11,3 +11,9 @@ await browser.execute(() => {
     return originalFetch(url, options);
   };
 });
+
+await $(dashboardSelectors.logoutButton).click();
+await expect($(dashboardSelectors.logoutButton)).toBeDisabled(); // or not clickable
+
+// Also check you're still on the dashboard
+await expect(browser).toHaveUrlContaining('/dashboard'); // Or your landing route
