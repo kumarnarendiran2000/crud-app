@@ -1,0 +1,13 @@
+await browser.execute(() => {
+  const originalFetch = window.fetch;
+  window.fetch = async (url, options) => {
+    if (url.includes('/logout')) {
+      console.log('Mocking logout response');
+      return new Response(JSON.stringify({ message: 'logout success' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return originalFetch(url, options);
+  };
+});
