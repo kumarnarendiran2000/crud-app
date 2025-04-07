@@ -55,3 +55,41 @@ This will make your test pass in both local and CI environments reliably without
 
 Let me know if you want to apply this in a loop/test runner setup too!
 
+Yes — that works perfectly and is a robust solution!
+
+Here's how the flow can look:
+
+await logoutButton.click();
+
+// Step 1: Wait for redirection to `/logout`
+await browser.waitUntil(
+  async () => (await browser.getUrl()).includes('/logout'),
+  {
+    timeout: 5000,
+    timeoutMsg: 'Expected redirection to /logout after clicking logout button',
+  }
+);
+
+// Step 2: Go back to dashboard
+await browser.back(); // navigates back in history
+
+// Step 3: Verify logout button is disabled (confirm logout happened)
+await expect(logoutButton).toBeDisabled();
+
+// Step 4: Ensure we're back on the dashboard
+await expect(await browser.getUrl()).toContain(urls.localDevDashboard);
+
+
+---
+
+Why this is solid:
+
+It avoids flaky timing issues.
+
+It confirms both logout redirection and final state (disabled button, dashboard URL).
+
+Works consistently across headless/CI/local modes.
+
+
+Let me know if you want to wrap this as a helper to reuse!
+
