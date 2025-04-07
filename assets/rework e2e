@@ -17,3 +17,41 @@ await expect($(dashboardSelectors.logoutButton)).toBeDisabled(); // or not click
 
 // Also check you're still on the dashboard
 await expect(browser).toHaveUrlContaining('/dashboard'); // Or your landing route
+
+Yes, the approach you're using is valid and maintainable — having an array of link selectors and verifying the current URL in a helper function is a good design.
+
+To support multiple possible expected URLs (like one for local and another for CI), you can simply allow expectedUrlContains to accept an array and check if any of them match. Here's how you can modify your utility function:
+
+Step 1: Update the type
+
+export async function verifyInSameTabAndGoBack(expectedUrlContains: string | string[]) {
+  await browser.waitUntil(
+    async () => {
+      const currentUrl = await browser.getUrl();
+      if (Array.isArray(expectedUrlContains)) {
+        return expectedUrlContains.some((expected) => currentUrl.includes(expected));
+      }
+      return currentUrl.includes(expectedUrlContains);
+    },
+    {
+      timeout: 10000,
+      timeoutMsg: `Expected URL to contain ${JSON.stringify(expectedUrlContains)}, but got ${await browser.getUrl()}`,
+    }
+  );
+
+  await browser.back(); // Navigate back to original screen
+}
+
+Step 2: In your selectors list
+
+Update the object like this:
+
+expectedUrlContains: [
+  'soisyst1.standardlife.com/secure/customer-authentication-client/customer/login',
+  'localhost:3000/secure/customer-authentication-client/customer/login',
+]
+
+This will make your test pass in both local and CI environments reliably without relying on pauses, and still remain readable and scalable.
+
+Let me know if you want to apply this in a loop/test runner setup too!
+
