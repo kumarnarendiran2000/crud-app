@@ -77,3 +77,67 @@ Allure reports and screenshots are correctly generated and uploaded.
 
 Let me know if you want this broken down into subtasks or checklist format.
 
+Here’s a clear and professional version of your PR comment:
+
+
+---
+
+Comment (for Draft PR):
+
+Marking this PR as Draft while I work on fixing the E2E test pipeline failures triggered on this PR's approval. These failures are due to recent UI changes — refer to ticket EMBER-867 for context.
+
+As part of this effort:
+
+I'm updating the E2E test suite to align with the latest dashboard UI.
+
+Additionally, I’ve found and implemented a way to serve the built dashboard instead of relying on a local dev server — this ensures better stability during tests.
+
+
+I'll be creating two separate PRs:
+
+1. One for updating the dashboard scripts to incorporate the necessary .env-related changes.
+
+
+2. One for the E2E test suite improvements.
+
+
+
+The final E2E pipeline updates will be pushed in this PR and this branch once the other changes are ready.
+
+Currently progressing through the implementation — will update this PR and link the others once created.
+
+
+---
+
+Let me know if you'd like a shorter version or want to tag teammates or link specific commits.
+
+Sure! Here's a shorter, clear version of the PR comment:
+
+
+---
+
+Marking this PR as Draft for now.
+
+Holding it to fix E2E pipeline failures triggered post-approval — caused by recent UI changes (refer: EMBER-867). As part of this:
+
+Updating the E2E test suite to match new dashboard behavior.
+
+Implemented a way to serve the built dashboard instead of running the local dev server.
+
+
+Will raise two separate PRs:
+
+1. One for .env and script updates in the dashboard.
+
+
+2. One for test suite fixes.
+
+
+
+Final E2E pipeline updates will be pushed here. Will update once the supporting PRs are created.
+
+
+---
+
+Let me know if you want it even more concise!
+
