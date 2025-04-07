@@ -93,3 +93,26 @@ Works consistently across headless/CI/local modes.
 
 Let me know if you want to wrap this as a helper to reuse!
 
+Perfect! Here's the updated version of your utility function that strictly accepts a string[] for expectedUrlContains:
+
+export async function verifyInSameTabAndGoBack(expectedUrlContains: string[]) {
+  await browser.waitUntil(
+    async () => {
+      const currentUrl = await browser.getUrl();
+      return expectedUrlContains.some((expected) => currentUrl.includes(expected));
+    },
+    {
+      timeout: 10000,
+      timeoutMsg: `Expected URL to contain one of ${JSON.stringify(expectedUrlContains)}, but got ${await browser.getUrl()}`,
+    }
+  );
+
+  await browser.back(); // Navigate back to the original screen
+}
+
+Now it's clean, type-safe, and focused! You can directly pass an array like:
+
+await verifyInSameTabAndGoBack(['/help/accessibility', '/support/accessibility']);
+
+Let me know if you'd like to update the selector config side too!
+
