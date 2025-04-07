@@ -1,0 +1,79 @@
+Perfect! Here's the revised version written as Jira ticket instructions — clear, actionable, and ready to guide development work:
+
+
+---
+
+Title:
+
+Update E2E Test Suite to Reflect Dashboard Behaviour Changes and UI Enhancements
+
+
+---
+
+Description / To Do:
+
+Update the WebDriverIO E2E test suite to reflect recent changes in the Ember Dashboard web application and improve test reliability.
+
+Tasks to Complete:
+
+1. Footer & Top Action Links:
+
+Update test logic to reflect new link behaviour (e.g., same-tab navigation).
+
+Verify navigation and return flows are correctly handled.
+
+
+
+2. Logout Flow:
+
+Adjust test to reflect updated logout behaviour.
+
+Ensure the logout button disables after click and does not redirect.
+
+
+
+3. React Native Error Box:
+
+Suppress the bottom-left React Native error overlay by serving a built dashboard locally.
+
+
+
+4. Alert Box Removal:
+
+Remove outdated alert box interactions in tests (component has been removed from UI).
+
+
+
+5. Error Logging Enhancement:
+
+Improve waitForElementToBeDisplayed logs to identify failing element context.
+
+
+
+6. Footer Provider Details Fix:
+
+Update tests to correctly assert provider-related information in the footer.
+
+
+
+7. Dashboard CTA Label:
+
+Update DG dashboard tests to handle singular/plural logic for the "Manage Your Pension(s)" button based on pension count.
+
+
+
+
+Acceptance Criteria:
+
+All updated test cases reflect the latest dashboard functionality.
+
+Test suite passes locally and in CI (GitHub Actions).
+
+Allure reports and screenshots are correctly generated and uploaded.
+
+
+
+---
+
+Let me know if you want this broken down into subtasks or checklist format.
+
