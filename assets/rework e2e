@@ -165,3 +165,41 @@ Cleaner for shared utility usage in tests.
 Let me know if you want to add a custom error message as well!
 
 
+You're absolutely right — previously you were using:
+
+${{ github.head_ref || github.ref_name }}
+
+This works well in most cases to cover both push and pull_request events. But since you now need to sanitize the value to avoid /, it's better to:
+
+
+---
+
+✅ Keep the dual fallback logic, but sanitized
+
+You can do this in two steps:
+
+1. Set a custom sanitized branch/PR name:
+
+- name: Set sanitized ref name
+  run: |
+    RAW_REF="${{ github.head_ref || github.ref_name }}"
+    SAFE_REF="${RAW_REF//\//-}"
+    echo "SANITIZED_REF=$SAFE_REF" >> $GITHUB_ENV
+
+2. Use it in your artifact name:
+
+- name: Upload Allure Report
+  uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: allure-report-${{ env.SANITIZED_REF }}
+    path: tests/e2e/reports/allure/allure-report/index.html
+    retention-days: 7
+
+
+---
+
+This way you retain the flexibility of handling both PRs and branches — while ensuring slashes (/) are removed.
+
+Let me know if you want me to rewrite your full pipeline.yml section with this fix.
+
