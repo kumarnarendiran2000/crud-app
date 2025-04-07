@@ -116,3 +116,52 @@ await verifyInSameTabAndGoBack(['/help/accessibility', '/support/accessibility']
 
 Let me know if you'd like to update the selector config side too!
 
+Yes, absolutely — you can modify switchToTabAndVerify to accept both a string and string array, just like the verifyInSameTabAndGoBack function. Here's how you can do that:
+
+
+---
+
+Update the function like this:
+
+export async function switchToTabAndVerify(
+  expectedUrlContains: string | string[],
+  originalWindow: string,
+) {
+  await browser.waitUntil(
+    async () => (await browser.getWindowHandles()).length > 1,
+    { timeout: 10000 }
+  );
+
+  const handles = await browser.getWindowHandles();
+  await browser.switchWindow(handles[handles.length - 1]);
+
+  const currentUrl = await browser.getUrl();
+
+  if (Array.isArray(expectedUrlContains)) {
+    const matched = expectedUrlContains.some((expected) =>
+      currentUrl.includes(expected)
+    );
+    expect(matched).toBeTruthy(); // or use any assertion library you use
+  } else {
+    expect(currentUrl).toContain(expectedUrlContains);
+  }
+
+  await browser.closeWindow();
+  await browser.switchWindow(originalWindow);
+}
+
+
+---
+
+✅ Benefits:
+
+Works whether you pass a string or an array.
+
+Avoids needing to refactor upstream logic or cast manually.
+
+Cleaner for shared utility usage in tests.
+
+
+Let me know if you want to add a custom error message as well!
+
+
