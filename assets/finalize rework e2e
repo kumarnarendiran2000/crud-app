@@ -52,3 +52,68 @@ Refer to [EMB-XXX] for detailed context on the UI changes and corresponding test
 
 Let me know your JIRA ticket ID if you'd like me to include it directly.
 
+Perfect, based on this explanation, here’s a refined and structured PR title and description that clearly communicates the context, motivation, and what was done:
+
+
+---
+
+PR Title
+
+Enable Dashboard Build with Desired Base URL for E2E Suite + Unify Env Handling
+
+
+---
+
+PR Description
+
+This PR introduces a consistent environment management strategy to support both local development and E2E test execution, where a custom base URL needs to be injected into the Expo Dashboard.
+
+
+---
+
+Context & Problem
+
+The web script for local dev server supports environment overrides via dotenvx run --env=....
+
+However, expo export (build) does not support .env injection, breaking our need to inject a desired base URL (used by Axios).
+
+This inconsistency prevented us from overriding the base URL when building the dashboard for E2E suite execution, both locally and in CI.
+
+
+
+---
+
+Solution & What Changed
+
+Introduced an environments/ folder containing:
+
+.env.localrun → used when starting local server
+
+.env.e2e → used when building dashboard for E2E tests
+
+
+Added cross-platform scripts using shx to copy the appropriate file into .env.local before each flow.
+
+Refactored:
+
+Removed .env.development and its usage in web script.
+
+Now the web script also uses .env.local to load its base URL.
+
+
+This ensures both local dev server and E2E test build load the correct base URL dynamically, without relying on hardcoded or inconsistent .env flows.
+
+
+
+---
+
+Bonus Fix
+
+Updated cookie banner logic to set the domain to localhost when running locally.
+
+
+
+---
+
+Let me know if you want to auto-link this to a Jira ticket or add anything for reviewers!
+
