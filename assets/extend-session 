@@ -1,0 +1,36 @@
+import { z } from 'zod'
+import { describe, expect } from 'vitest'
+import { apiTest } from '../../../fixture'
+import type { TestPack } from '../../../types'
+
+// Align with handler's response schema
+const responseSchema = z.object({
+  message: z.literal('Session extended'),
+})
+
+type ExtendSessionResponse = z.infer<typeof responseSchema>
+
+const testPack: TestPack<ExtendSessionResponse> = [
+  {
+    description: 'Valid Extend Session response',
+    response: {
+      status: 202,
+      body: { message: 'Session extended' },
+    },
+  },
+]
+
+describe('GET /secure/api/extend-session works as expected', () => {
+  testPack.forEach(({ ck, description, response: { status, body } }) => {
+    apiTest(description, async ({ baseUrl }) => {
+      const res = await fetch(`${baseUrl}/secure/api/extend-session`, {
+        headers: ck ? { cookie: `ck=${ck}` } : {},
+      })
+
+      expect(res.status).toBe(status)
+
+      const json = await res.json()
+      expect(json).toEqual(body)
+    })
+  })
+})
