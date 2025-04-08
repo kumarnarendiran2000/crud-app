@@ -1,0 +1,54 @@
+Got it! For the comment above the Manage your pensions button logic, here's a clearer and more meaningful version:
+
+// This EE has multiple pensions, so the button label appears in plural ("Manage your pensions")
+// Ensure the button is visible before interaction
+
+Let me know if you'd prefer a shorter or more technical variation!
+
+Got it! Here's a clearer and more meaningful version of the comment and test title, matching your intent:
+
+it('Ensures page loaded fully and the "Manage your pension(s)" button is visible', async () => {
+  // The employee (EE) has one or more pensions, so the button label may be singular or plural.
+  // This button should be visible and leads to the DG Dashboard.
+  const managePensionsButton = $(dashboardSelectors.managePensionsButton);
+  await waitForElementToBeDisplayed(managePensionsButton);
+});
+
+Let me know if you want to include the click step and navigation assertion too.
+
+Here’s a more clear and descriptive version of the TODO comment:
+
+// TODO: Re-enable this test if the alert box component is reintroduced in the Dashboard UI.
+// It has been commented out as the component was temporarily removed based on PO's instructions.
+
+Let me know if you'd like to include the JIRA ticket reference or a date tag for context too.
+
+
+
+Here’s a clean and clear PR title and description you can use:
+
+
+---
+
+PR Title: Refactor E2E Test Suite to Align with Latest Dashboard UI & Flow Changes
+
+PR Description: This PR updates and refactors the WebDriverIO E2E test suite to reflect recent changes in the Ember Dashboard UI and flow. The key updates include:
+
+Aligned test cases with updated logout behavior
+
+Updated footer link validations and CTA button interactions
+
+Improved error logging in waitForElementToBeDisplayed to help pinpoint failures more accurately
+
+Adjusted test config data to reflect accurate decimal values
+
+General refactoring for clarity and stability
+
+
+Refer to [EMB-XXX] for detailed context on the UI changes and corresponding test updates.
+
+
+---
+
+Let me know your JIRA ticket ID if you'd like me to include it directly.
+
