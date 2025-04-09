@@ -203,3 +203,11 @@ This way you retain the flexibility of handling both PRs and branches — while 
 
 Let me know if you want me to rewrite your full pipeline.yml section with this fix.
 
+Absolutely! Here's your refined short and sweet comment with that line added:
+
+
+---
+
+Noticed an issue with the earlier build-time domain approach — setting it to localhost broke cookie setting on custom local domains. Updated the logic to use EXPO_PUBLIC_IS_LOCAL_RUN flag instead. When true, domain is set to undefined, letting the browser handle it correctly.
+This avoids runtime checks, resolves at build time, and ensures cookies are set as expected across runs.
+
