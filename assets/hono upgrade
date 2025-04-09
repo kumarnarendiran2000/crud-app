@@ -1,0 +1,67 @@
+Perfect! Here's the revised PR description with "latest version of Hono" in the beginning, without mentioning the version number upfront:
+
+
+---
+
+PR Title
+
+chore: upgrade hono to latest version and refactor MoneyHub tests for multiValueHeaders compatibility
+
+
+---
+
+PR Description
+
+> This PR upgrades the hono dependency to the latest version and refactors the MoneyHub backend handler tests to align with the updated behavior of the AWS Lambda adapter.
+
+Background:
+In the latest version of Hono, the AWS Lambda adapter was updated to return either headers or multiValueHeaders — not both — depending on the request type.
+This change aligns with AWS Lambda/API Gateway response standards and helps avoid header duplication issues.
+
+Refer to Hono PR #3883 for details:
+"APIGWProxyResult should contain either of headers or multiValueHeaders, not both"
+
+Changes Made:
+
+Upgraded hono to the latest version
+
+Re-added the auto-upgrade marker
+
+Refactored MoneyHub test cases:
+
+get-link-account.test.ts
+
+get-complete-connection.test.ts
+
+
+Updated header extraction to use:
+
+response.multiValueHeaders?.[key]?.[0]
+
+
+Why:
+Our mocked Lambda responses include only multiValueHeaders, which caused failures in tests where response.headers was previously used.
+
+
+
+
+---
+
+Checklist
+
+[x] Hono upgraded to latest version
+
+[x] Auto-upgrade marker restored
+
+[x] Refactored test files
+
+[x] All tests passing
+
+[x] Verified against upstream Hono PR #3883
+
+
+
+---
+
+Let me know if you'd like this in markdown, a commit message, or a changelog format too!
+
