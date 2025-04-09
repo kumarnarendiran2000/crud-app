@@ -193,3 +193,12 @@ refactor(cookie): move domain logic to build-time using env variable
 
 Let me know if you want to prefix it differently (e.g., fix: or chore:) based on your team's convention.
 
+Here are sweet, clean, and meaningful names for the steps, especially focusing on the new frontend dashboard ones:
+
+- name: Trigger env setup for frontend dashboard
+- name: Build Ember Dashboard for E2E
+- name: Serve Ember Dashboard locally at port 8081
+- name: Wait for Ember Dashboard to be available
+
+This keeps them consistent with the style of existing ones like Run Backend and Mock-SLAL API servers and adds clarity on what exactly is happening. Let me know if you want even shorter or more technical naming!
+
