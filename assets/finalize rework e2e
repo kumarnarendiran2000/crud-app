@@ -130,3 +130,26 @@ Added the domain env variable to .env.localrun and .env.e2e, which gets copied t
 
 Let me know if you want to add a note about shx or cross-platform support too.
 
+Here’s a clean and clear comment you can drop on the PR to update the context:
+
+
+---
+
+Marked this PR as draft earlier while we worked on E2E test pipeline alignment. As mentioned, we’ve now created two separate PRs:
+
+1. Frontend changes – to unify environment setup using .env.local and serve dashboard builds with desired base URLs for E2E and local runs.
+
+
+2. E2E test suite fixes – to align tests with recent UI and flow changes (footer, top actions, logout, etc.)
+
+
+
+We’ve now pushed additional commits to this PR to update the E2E pipeline itself based on the above changes. It now builds and serves the dashboard for tests and includes a fix for artifact naming by sanitizing branch names.
+
+Will update once the other two PRs are merged.
+
+
+---
+
+Let me know if you'd like a shorter version or if you're tagging anyone in it.
+
