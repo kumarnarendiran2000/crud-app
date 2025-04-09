@@ -183,3 +183,13 @@ Note: This PR depends on #1234. Once that is merged, we’ll mark this PR as rea
 
 Let me know if you'd like to adjust the tone or add any mentions.
 
+Here’s a clean and concise commit message for this change:
+
+refactor(cookie): move domain logic to build-time using env variable
+
+- Replaced runtime hostname check with process.env.EXPO_PUBLIC_COOKIE_DOMAIN
+- Added domain to .env.localrun and .env.e2e
+- Ensures clean build output without localhost references
+
+Let me know if you want to prefix it differently (e.g., fix: or chore:) based on your team's convention.
+
