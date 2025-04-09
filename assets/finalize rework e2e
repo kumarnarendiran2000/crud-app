@@ -117,3 +117,16 @@ Updated cookie banner logic to set the domain to localhost when running locally.
 
 Let me know if you want to auto-link this to a Jira ticket or add anything for reviewers!
 
+Absolutely! Here's a concise comment with that included:
+
+
+---
+
+Updated to use process.env.EXPO_PUBLIC_COOKIE_DOMAIN to handle domain at build time — avoids localhost in runtime output.
+Added the domain env variable to .env.localrun and .env.e2e, which gets copied to .env.local as part of the regular flow.
+
+
+---
+
+Let me know if you want to add a note about shx or cross-platform support too.
+
