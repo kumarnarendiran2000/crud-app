@@ -202,3 +202,35 @@ Here are sweet, clean, and meaningful names for the steps, especially focusing o
 
 This keeps them consistent with the style of existing ones like Run Backend and Mock-SLAL API servers and adds clarity on what exactly is happening. Let me know if you want even shorter or more technical naming!
 
+Perfect! Here's the updated version with that last line included:
+
+
+---
+
+Marked this PR as draft earlier while we worked on aligning the E2E pipeline with recent dashboard behavior changes.
+
+As mentioned, we’ve created two supporting PRs:
+
+1. [#1234 – Frontend env setup refactor]: Introduces .env.local handling to unify environment setup and serve dashboard builds with desired base URLs.
+
+
+2. [#1235 – E2E test suite alignment]: Updates tests to reflect the latest UI and flow changes (footer links, top actions, logout behavior, etc.) – this PR is already merged.
+
+
+
+We’ve now pushed additional commits to this PR to:
+
+Build and serve the dashboard during E2E test runs.
+
+Sanitize branch names for valid artifact names.
+
+
+Note: This PR depends on #1234. Once that is merged, we’ll mark this PR as ready.
+Meanwhile, changes are open for review even though the PR remains in draft for now.
+
+
+---
+
+Let me know if you’d like to tag anyone or hyperlink the PR numbers.
+
+
