@@ -145,3 +145,66 @@ like(...) makes sure your dynamic fields are matched safely.
 
 Let me know if you want to plug in a mock/failure trigger for the 500 case too.
 
+Thanks for sharing the AWS response. Since your test runs locally and hits the local Hono server, your test assertions should match local values, not the AWS-specific ones.
+
+But here’s the best practice:
+
+
+---
+
+1. Use like() Matchers for Dynamic Fields
+
+Because values like liveSince, requestId, etc. change every time, use like() so it matches type, not value.
+
+
+---
+
+2. Local Test Assertion Example
+
+import { describe, expect } from 'vitest'
+import { apiTest } from '../../fixtures'
+import { like } from 'pactum-matchers'
+
+describe('GET /api/internal/healthcheck works as expected', () => {
+  apiTest('Valid local healthcheck response', async ({ baseUrl }) => {
+    await baseUrl
+      .get('/api/internal/healthcheck')
+      .expectStatus(200)
+      .expectJsonMatch({
+        liveSince: like('any string'),
+        lastRefreshed: like('any string'),
+        environmentDetails: like({
+          regionExecution: like('any string'),
+          functionName: like('any string'),
+          lambdaVersion: like('any string'),
+          artifactVersion: like('any string'),
+          deployTimestamp: like('any string'),
+          executionEnvironment: like('any string'),
+          memoryInMB: like('any string'),
+          lambdaInitialisationType: like('any string'),
+        }),
+        requestDetails: like({
+          stage: like('any string'),
+          requestId: like('any string')
+        })
+      })
+  })
+})
+
+
+---
+
+3. Why This Works:
+
+Keeps your test environment-agnostic.
+
+Avoids flaky tests due to dynamic values.
+
+Focuses on shape and type, which is what matters most for schema validation.
+
+
+
+---
+
+Let me know if you want to also assert exact structure (like key count) or allow extra keys!
+
