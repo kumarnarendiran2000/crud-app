@@ -212,3 +212,36 @@ Let me know if you want to also assert exact structure (like key count) or allow
   requestId: /^[a-f0-9\-]{36}$/,   // regex
   liveSince: expect.any(String),  // matcher
 })
+
+Got it! Here's the updated version for both files, including the reason and the Expo docs link:
+
+
+---
+
+For .env.localrun:
+
+# NOTE:
+# This file is used for local dev runs and must be copied to `.env.local`
+# using the script defined in package.json:
+#   pnpm env.local:web
+#
+# This approach is required because Expo does not support injecting
+# env files directly into build scripts.
+# Ref: https://docs.expo.dev/guides/environment-variables/#limitations
+
+
+---
+
+For .env.e2e:
+
+# NOTE:
+# This file is used for E2E test runs and must be copied to `.env.local`
+# using the script defined in package.json:
+#   pnpm env.local:e2e
+#
+# This approach is required because Expo does not support injecting
+# env files directly into build scripts.
+# Ref: https://docs.expo.dev/guides/environment-variables/#limitations
+
+Let me know if you'd like a version that's more concise or adjusted to your team's style.
+
