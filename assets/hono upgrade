@@ -65,3 +65,20 @@ Checklist
 
 Let me know if you'd like this in markdown, a commit message, or a changelog format too!
 
+Congrats on getting the PR merged!
+
+Here’s a clean and concise comment you can post on the Jira ticket to mark it as done:
+
+
+---
+
+Comment:
+
+Upgraded Hono to the latest version (v4.7.6) and updated MoneyHub handler tests (get-link-account.test.ts, get-complete-connection.test.ts) to handle the new multiValueHeaders behavior in Lambda responses. Also restored the auto-upgrade marker. Verified all tests are passing.
+Changes have been merged successfully — marking this ticket as Done.
+
+
+---
+
+Let me know if you'd like to tag someone or include the PR link in the comment too!
+
