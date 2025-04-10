@@ -54,3 +54,94 @@ describe('GET /healthcheck works as expected', () => {
 
 Let me know if your schema uses different keys or if you want to test more edge cases (e.g. malformed schema, missing fields, etc.).
 
+Yes, you can absolutely follow the TestPack approach like your csrf-token and extend-session tests. It’s a clean and scalable pattern — and it works even when testing both 200 (valid) and 500 (error) responses.
+
+Here’s how you can do it for the healthcheck endpoint:
+
+
+---
+
+Step 1: Define TestPack with Expected Body
+
+import { like } from 'pactum-matchers'
+import type { TestPack } from '../../../types' // Adjust path as needed
+
+const testPack: TestPack = [
+  {
+    ck: 'valid-healthcheck',
+    description: 'Valid healthcheck response',
+    response: {
+      status: 200,
+      body: {
+        liveSince: like('any string'),
+        lastRefreshed: like('any string'),
+        environmentDetails: like({
+          regionExecution: like('any string'),
+          functionName: like('any string'),
+          lambdaVersion: like('any string'),
+          artifactVersion: like('any string'),
+          deployTimestamp: like('any string'),
+          executionEnvironment: like('any string'),
+          memoryInMB: like('any string'),
+          lambdaInitialisationType: like('any string'),
+        }),
+        requestDetails: like({
+          stage: like('any string'),
+          requestId: like('any string')
+        })
+      }
+    }
+  },
+  {
+    ck: 'force-error',
+    description: 'Simulate internal error and verify 500 response',
+    response: {
+      status: 500,
+      body: {
+        message: 'Internal server error'
+      }
+    }
+  }
+]
+
+
+---
+
+Step 2: Write the Test
+
+import { describe } from 'vitest'
+import { apiTest } from '../../../fixture' // adjust if needed
+
+describe('GET /api/internal/healthcheck works as expected', () => {
+  testPack.forEach(({ ck, description, response }) => {
+    apiTest(description, async ({ baseUrl }) => {
+      const spec = baseUrl.get('/api/internal/healthcheck')
+
+      if (ck === 'force-error') {
+        // optionally simulate an error here if needed via mocks
+      }
+
+      await spec
+        .expectStatus(response.status)
+        .expectJsonMatch(response.body)
+    })
+  })
+})
+
+
+---
+
+Notes:
+
+If you can't force a 500 response directly, you may skip or mock it using Pactum's handlers later.
+
+This approach is reusable and readable.
+
+like(...) makes sure your dynamic fields are matched safely.
+
+
+
+---
+
+Let me know if you want to plug in a mock/failure trigger for the 500 case too.
+
