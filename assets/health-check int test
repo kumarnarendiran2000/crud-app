@@ -208,3 +208,7 @@ Focuses on shape and type, which is what matters most for schema validation.
 
 Let me know if you want to also assert exact structure (like key count) or allow extra keys!
 
+.expectBody({
+  requestId: /^[a-f0-9\-]{36}$/,   // regex
+  liveSince: expect.any(String),  // matcher
+})
