@@ -1,0 +1,56 @@
+Thanks! Based on your handleGETHealthcheck implementation in Ember (Hono backend), here’s how you can write the integration test aligned with your previous test styles like csrf-token and extend-session.
+
+
+---
+
+Integration Test: healthcheck.test.ts
+
+import { describe, expect } from 'vitest'
+import { apiTest } from '../../../../../tests/fixture'
+import type { TestPack } from '../../../../../tests/types'
+
+type HealthcheckResponse = {
+  liveSince: string
+  lastRefreshed: string
+  environmentDetails: Record<string, unknown>
+  requestDetails: {
+    stage: string
+    requestId: string
+  }
+}
+
+const testPack: TestPack<HealthcheckResponse> = [
+  {
+    description: 'Valid healthcheck response',
+    response: {
+      status: 200,
+      body: {
+        liveSince: expect.any(String),
+        lastRefreshed: expect.any(String),
+        environmentDetails: expect.any(Object),
+        requestDetails: {
+          stage: expect.any(String),
+          requestId: expect.any(String),
+        },
+      },
+    },
+  },
+]
+
+describe('GET /healthcheck works as expected', () => {
+  testPack.forEach(({ description, response }) => {
+    apiTest(description, async ({ baseUrl }) => {
+      const res = await fetch(`${baseUrl}/healthcheck`)
+      const body = await res.json()
+
+      expect(res.status).toBe(response.status)
+      expect(body).toMatchObject(response.body)
+    })
+  })
+})
+
+
+---
+
+Let me know if your schema uses different keys or if you want to test more edge cases (e.g. malformed schema, missing fields, etc.).
+
