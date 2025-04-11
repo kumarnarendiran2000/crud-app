@@ -1,0 +1,49 @@
+Here’s your full test code written in standard format for a Pactum-based integration test of the /feedback endpoint:
+
+import { spec } from 'pactum'
+import { rrFeedbackSchema } from '@/schema/rant-and-rave.schema'
+import { API_BASE_URL } from '../constants'
+
+const mockCustomerData = {
+  thisCkGuid: 'mock-guid-123',
+  firstName: 'Test',
+  lastName: 'User',
+  email: 'test.user@example.com',
+  mobile: '1234567890',
+}
+
+const mockFeedbackRequest = {
+  feedback: 'Very helpful experience!',
+  rating: 5,
+}
+
+const expectedRrFeedbackRequestBody = {
+  CustomerCKGUID: mockCustomerData.thisCkGuid,
+  CustomerFirstName: mockCustomerData.firstName,
+  CustomerLastName: mockCustomerData.lastName,
+  CustomerEmail: mockCustomerData.email,
+  CustomerMobile: mockCustomerData.mobile,
+  FeedbackComment: mockFeedbackRequest.feedback,
+  FeedbackRating: mockFeedbackRequest.rating,
+  FeedbackSource: 'Web',
+}
+
+describe('POST /feedback - Submit Feedback to Rant & Rave', () => {
+  it('should successfully send feedback payload and return status 200', async () => {
+    await spec()
+      .post(`${API_BASE_URL}/feedback`)
+      .withHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      })
+      .withBody(mockFeedbackRequest)
+      .expectStatus(200)
+      .expectJsonLike({ status: 'success' })
+
+    // Optionally validate the transformed body against schema
+    expect(rrFeedbackSchema.safeParse(expectedRrFeedbackRequestBody).success).toBe(true)
+  })
+})
+
+Let me know if you’d like to split this into web/mobile variants, or add error case scenarios.
+
