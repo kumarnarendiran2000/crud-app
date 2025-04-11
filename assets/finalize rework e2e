@@ -234,3 +234,59 @@ Meanwhile, changes are open for review even though the PR remains in draft for n
 Let me know if you’d like to tag anyone or hyperlink the PR numbers.
 
 
+Absolutely! Here’s your final revised PR description, now aligned with your latest explanation (removal of env injection, use of Expo’s native env support, and E2E-specific handling):
+
+
+---
+
+Title: chore(dashboard): simplify env management using Expo defaults and support E2E builds (EMBED-887)
+
+Description:
+
+This PR refines our environment management strategy by leveraging Expo’s native support for .env.production and .env.development, removing the need for .env overrides or injected env logic.
+
+Why this change?
+
+Previously, we used .env and manual injection (e.g., dotenvx run) to load environment variables. This worked for expo start (local dev server), but not for expo export (build), as Expo does not support injecting env files during builds. To build the dashboard for E2E test execution with a custom base URL and correct cookie domain, we adopted a file-based override strategy instead.
+
+Updated Workflow:
+
+Removed: .env file and script-based env injection.
+
+Created:
+
+.env.development: used automatically by expo start, includes local dev API base URL.
+
+.env.production: used automatically by expo export, includes prod cookie domain.
+
+environments/env.test: used for E2E builds.
+
+Includes the test base URL.
+
+Leaves cookie domain empty so it defaults to undefined at build time.
+
+
+
+Script added in package.json to copy env.test → .env.production.local before dashboard is built for E2E runs.
+
+Expo behavior ensures that during build, .env.production and .env.production.local are merged.
+
+Updated ModalCookieBanner.tsx to rely on process.env.EXPO_PUBLIC_COOKIE_DOMAIN, which:
+
+Uses the domain when set (prod).
+
+Falls back to undefined (local/E2E).
+
+
+
+Result:
+
+E2E builds now work reliably with custom URLs and no cookie issues.
+
+Local dev experience remains unchanged.
+
+Runtime-based logic (e.g., window.hostname) removed in favor of build-time env resolution.
+
+
+Let me know if you want a short changelog or script name references added!
+
