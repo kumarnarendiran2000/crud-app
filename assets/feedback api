@@ -155,3 +155,118 @@ Response schema check (optional): You can still safeParse() the constructed rrFe
 
 Let me know if you want that optional schema validation too, or need to add mobile/web variations!
 
+Yes — your plan is spot on and a very clean approach for this kind of integration testing setup. Here's how it works and why it’s great:
+
+
+---
+
+Why calling /secure/api/customer-overview via spec() is better here
+
+Your Ember backend already calls Mock SLAL for customer data in local/test env.
+
+The integration test will exercise the real logic inside getCustomer() indirectly.
+
+You don’t need to import or spy on cross-package files — this keeps the test decoupled.
+
+You can extract ckguid, name, email, etc. from the response to build the payload.
+
+
+
+---
+
+✅ Flow for your Integration Test
+
+1. Make a GET /secure/api/customer-overview call via spec()
+→ Ember hits Mock SLAL → Returns test customer response
+
+
+2. Extract required fields like:
+
+customerSession.ckguid
+
+firstName, lastName
+
+email, mobile
+
+
+
+3. Use this dynamic data to build rrFeedbackRaw (or simplified request)
+
+
+4. POST to /secure/api/feedback with that constructed payload
+→ Your backend will use the same flow, including the Rant & Rave POST call (which you will mock)
+
+
+
+
+---
+
+Sample Test Skeleton (Concept)
+
+import { spec } from 'pactum'
+import { vi } from 'vitest'
+import axios from 'axios'
+
+describe('POST /feedback - Integration using real mock customer data', () => {
+  let customerData: any
+
+  beforeAll(async () => {
+    const res = await spec()
+      .get('/secure/api/customer-overview')
+      .withCookies('ck', 'your-test-cookie') // if needed
+      .expectStatus(200)
+
+    customerData = res.body?.customerSession
+  })
+
+  beforeEach(() => {
+    vi.spyOn(axios, 'post').mockResolvedValue({ status: 202, data: '' })
+  })
+
+  it('should send feedback with extracted customer details', async () => {
+    const feedbackRequest = {
+      feedback: 'Smooth experience!',
+      rating: 5,
+    }
+
+    const expectedRrPayload = {
+      CustomerCKGUID: customerData.ckguid,
+      CustomerFirstName: customerData.firstName,
+      CustomerLastName: customerData.lastName,
+      CustomerEmail: customerData.email,
+      CustomerMobile: customerData.mobile,
+      FeedbackComment: feedbackRequest.feedback,
+      FeedbackRating: feedbackRequest.rating,
+      FeedbackSource: 'Web',
+      // other required fields if needed
+    }
+
+    await spec()
+      .post('/secure/api/feedback')
+      .withHeaders({ 'Content-Type': 'application/json' })
+      .withBody(feedbackRequest)
+      .expectStatus(202)
+      .expectJsonLike({ message: 'Feedback received for submission' })
+
+    // Optional: validate schema
+    // expect(rrFeedbackSchema.safeParse(expectedRrPayload).success).toBe(true)
+  })
+})
+
+
+---
+
+Advantages
+
+Cleaner than spying across packages
+
+Truly mimics the production flow — from fetching user to sending feedback
+
+You keep feedback logic untouched and only isolate the third-party dependency (R&R)
+
+
+
+---
+
+Let me know if you’d like the full test code with dynamic construction and safe parse check!
+
