@@ -290,3 +290,9 @@ Runtime-based logic (e.g., window.hostname) removed in favor of build-time env r
 
 Let me know if you want a short changelog or script name references added!
 
+Here’s a short and clear commit message for your changes:
+
+chore(dashboard): align env setup with Expo defaults and support E2E build overrides
+
+Let me know if you'd like a variant with EMBED-887 in it or want to emphasize the cookie domain logic too.
+
