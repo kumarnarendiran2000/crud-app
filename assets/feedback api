@@ -47,3 +47,111 @@ describe('POST /feedback - Submit Feedback to Rant & Rave', () => {
 
 Let me know if you’d like to split this into web/mobile variants, or add error case scenarios.
 
+Great follow-up! Yes — you’re absolutely right to improve this by removing the hardcoded customer data and instead mocking it via spies, just like we discussed earlier.
+
+
+---
+
+Here’s how you can properly do it in your feedback.test.ts file:
+
+1. Mock getCustomer() using vi.spyOn
+
+This will return mocked customer data used inside the service (submitFeedback()):
+
+import * as customerWrapper from '@/wrappers/customer'
+
+const mockCustomerResponse = {
+  customerSession: {
+    ckguid: 'mock-guid-123',
+    firstName: 'Test',
+    lastName: 'User',
+    email: 'test.user@example.com',
+    mobile: '1234567890',
+  }
+}
+
+vi.spyOn(customerWrapper, 'getCustomer').mockResolvedValue(mockCustomerResponse)
+
+2. Mock axios.post() or xior.post() to simulate successful Rant & Rave submission
+
+If you're still using axios, then:
+
+import axios from 'axios'
+
+vi.spyOn(axios, 'post').mockResolvedValue({
+  status: 202,
+  data: '', // Rant & Rave typically returns no body
+})
+
+Or if it’s xior, same idea:
+
+import xior from 'xior'
+
+vi.spyOn(xior, 'post').mockResolvedValue({
+  status: 202,
+  data: '',
+})
+
+> This ensures your Ember backend handler works independently of Rant & Rave in integration tests.
+
+
+
+
+---
+
+Final Touch: Your Test with Mocks
+
+import { spec } from 'pactum'
+import { vi } from 'vitest'
+import * as customerWrapper from '@/wrappers/customer'
+import axios from 'axios' // or xior
+import { rrFeedbackSchema } from '@/schema/rant-and-rave.schema'
+
+const mockCustomerResponse = {
+  customerSession: {
+    ckguid: 'mock-guid-123',
+    firstName: 'Test',
+    lastName: 'User',
+    email: 'test.user@example.com',
+    mobile: '1234567890',
+  }
+}
+
+const mockFeedbackRequest = {
+  feedback: 'Very helpful experience!',
+  rating: 5,
+}
+
+describe('POST /feedback - Submit Feedback to Rant & Rave', () => {
+  beforeEach(() => {
+    vi.spyOn(customerWrapper, 'getCustomer').mockResolvedValue(mockCustomerResponse)
+    vi.spyOn(axios, 'post').mockResolvedValue({ status: 202, data: '' })
+  })
+
+  it('should send feedback and return 202', async () => {
+    await spec()
+      .post('/secure/api/feedback') // adjust if needed
+      .withHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      })
+      .withBody(mockFeedbackRequest)
+      .expectStatus(202)
+      .expectJsonLike({ message: 'Feedback received for submission' })
+  })
+})
+
+
+---
+
+Summary
+
+Customer details: Mocked using vi.spyOn(getCustomer)
+
+Third-party POST call: Mocked using vi.spyOn(axios.post) or xior.post
+
+Response schema check (optional): You can still safeParse() the constructed rrFeedbackRaw payload if needed — by spying on internal method or breaking it into a helper.
+
+
+Let me know if you want that optional schema validation too, or need to add mobile/web variations!
+
