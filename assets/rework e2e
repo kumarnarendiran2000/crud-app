@@ -288,3 +288,23 @@ It’s working as expected — in the pipeline, the script runs before the dashb
 
 Updated the PR description accordingly as well. Let me know if anything else is needed!
 
+Absolutely! Here’s the updated PR description intro, revised just as you asked:
+
+
+---
+
+Title: chore(dashboard): simplify env management using Expo defaults and support E2E builds (EMBED-887)
+
+Description:
+
+This PR refines our environment management strategy by leveraging Expo’s native support for .env.production and .env.development, and removes the need for .env and dotenv-based injection logic for local or test builds.
+
+Additionally, we’ve introduced an environments/env.test file, which gets copied to .env.production.local during E2E test runs. This is used to build the dashboard with the appropriate test base URL and empty cookie domain, as explained below.
+
+
+---
+
+And then continue the rest of the description as previously written.
+
+Let me know if you'd like a TL;DR summary or checklist format as well!
+
