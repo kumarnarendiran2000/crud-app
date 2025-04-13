@@ -308,3 +308,20 @@ And then continue the rest of the description as previously written.
 
 Let me know if you'd like a TL;DR summary or checklist format as well!
 
+Got it! Here's the updated version with that part removed:
+
+
+---
+
+Hi Sam, as we discussed and aligned over call — I’ve made the required changes. We now use Expo’s default env handling with .env.development for local dev and .env.production for builds.
+
+For E2E runs, I’ve added .env.test under environments/, and a script to copy it into .env.production.local. This allows us to override the cookie domain (left empty) during test runs without affecting production behavior.
+
+It’s working as expected — in the pipeline, the script runs before the dashboard build and serve steps.
+
+I’ve also made the necessary changes in the GitHub Actions workflow (in the existing PR for the E2E test pipeline: [#PR_NUMBER]) to align with this. It now builds and serves the dashboard instead of starting the local dev server. Also added a small fix for artifact naming there.
+
+I’ve explained these changes in comments within that PR as well — would be great if you could review that too after this, as both are connected.
+
+Let me know if anything needs tweaking!
+
