@@ -1,0 +1,25 @@
+Here's the updated Step 3 for your documentation — refined and consistent with your current setup:
+
+
+---
+
+3. Build and Serve the Ember Dashboard App for E2E Tests
+Before building the dashboard, copy the E2E-specific environment variables using the script below:
+
+pnpm run copy-env-test
+
+This script copies the environments/.env.test file into .env.production.local, ensuring the correct base URL and cookie domain are injected into the build (Expo does not support direct env file injection during build).
+
+Then, build the dashboard:
+
+pnpm run build
+
+Once built, serve it locally on port 8081:
+
+pnpm serve apps/dashboard/dist -l 8081
+
+
+---
+
+Let me know when you need a follow-up comment for the PR or reviewer response!
+
