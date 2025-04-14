@@ -1,4 +1,4 @@
-Here’s your full test code written in standard format for a Pactum-based integration test of the /feedback endpoint:
+seeHere’s your full test code written in standard format for a Pactum-based integration test of the /feedback endpoint:
 
 import { spec } from 'pactum'
 import { rrFeedbackSchema } from '@/schema/rant-and-rave.schema'
@@ -269,4 +269,88 @@ You keep feedback logic untouched and only isolate the third-party dependency (R
 ---
 
 Let me know if you’d like the full test code with dynamic construction and safe parse check!
+
+Perfect — that confirms it: your request is getting rejected by the OpenAPI route-level validation, before your Hono handler (handlePOSTFeedback) is even called.
+
+This happens when headers or body do not match the Zod schema defined in the createRoute() spec.
+
+
+---
+
+What’s going wrong?
+
+Since you’re using factory.createHandler() with a schema like this:
+
+headers: z.object({
+  'is-mobile-app': z.enum(['true', 'false']).optional(),
+  SLPlatform: z.enum(['ios', 'android']).optional(),
+}),
+
+If your test doesn’t send these headers correctly, or sends them in the wrong format, Hono will block the request at the route level and respond with 400.
+
+
+---
+
+Debug steps for you right now:
+
+✅ 1. Double check your test call
+
+Ensure you're setting the headers exactly as expected (case-sensitive match too):
+
+await spec()
+  .post(`${baseUrl}/secure/api/feedback`)
+  .withHeaders({
+    'content-type': 'application/json',
+    accept: 'application/json',
+    'is-mobile-app': 'false',      // MUST be string 'false'
+    'slplatform': 'android'        // lowercase keys only if route schema allows
+  })
+  .withJson(feedbackRequest)
+  .expectStatus(202)
+
+> Note: If you’re using lowercase header names in .withHeaders(), but your z.object() schema uses SLPlatform (PascalCase), it won’t match. Hono does not auto-normalize keys.
+
+
+
+Fix: Update your schema keys to lowercase:
+
+headers: z.object({
+  'is-mobile-app': z.enum(['true', 'false']).optional(),
+  'slplatform': z.enum(['ios', 'android']).optional()
+})
+
+
+---
+
+✅ 2. Add .inspect() or .log()
+
+In your test:
+
+await spec()
+  .post(...)
+  .withHeaders(...)
+  .withJson(...)
+  .inspect()  // shows full request + response
+  .expectStatus(202);
+
+This will show the exact reason for 400 (usually a Zod validation failure).
+
+
+---
+
+✅ 3. Temporarily remove schema to test flow
+
+To confirm the handler is wired properly, comment out the headers part of the routeSpec:
+
+const routeSpec = createRoute({
+  ...
+  // headers: z.object({ ... }),   <-- comment this
+})
+
+If it starts working, then it's 100% a schema/header mismatch.
+
+
+---
+
+Would you like me to rewrite your header schema and test headers to match exactly?
 
