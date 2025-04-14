@@ -247,3 +247,7 @@ apiTest('should fail with 400 for invalid feedback body', async ({ baseUrl }) =>
 
 Let me know if you want to dynamically validate full mock payload using Zod schema as well, or test mobile platform conditions. Want me to add those too?
 
+app.use('*', async (c, next) => {
+  console.log(`[MOCK SLAL] ${c.req.method} ${c.req.url}`);
+  return next();
+});
