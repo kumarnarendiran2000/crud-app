@@ -251,3 +251,12 @@ app.use('*', async (c, next) => {
   console.log(`[MOCK SLAL] ${c.req.method} ${c.req.url}`);
   return next();
 });
+
+const response = await fetch(rantAndRaveApiUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': SECRETS.rantAndRave.rantAndRaveApiKey,
+  },
+  body: JSON.stringify(rrValidatedFeedback),
+});
