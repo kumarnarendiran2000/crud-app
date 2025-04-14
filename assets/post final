@@ -1,0 +1,115 @@
+Thanks for clarifying. Yes, got it perfectly now.
+
+Summary of Flow and Expectations
+
+You're testing an integration test for the Ember backend (/secure/api/feedback), which internally calls Rant and Rave. You're simulating Rant and Rave with a Mock SLAL server (not the Ember mock server), and you don’t want to mock axios or secrets in test — you want the whole flow to be real.
+
+Now your Ember backend logic handles:
+
+Secrets missing → Throws error → Ember returns 500
+
+Schema validation error in request body → Ember returns 400
+
+Any error during axios post to Rant & Rave (mock SLAL) → Ember returns 500
+
+
+So the mock SLAL route must simulate:
+
+1. Happy path (returns 202 and valid JSON)
+
+
+2. Missing API key in headers (returns 500)
+
+
+3. Malformed body / schema violation (returns 400)
+
+
+4. Simulated network / post failure / general error (returns 500 or throws)
+
+
+
+
+---
+
+Updated Plan for Mock SLAL POST /feedback Route
+
+app.post('/secure/api/feedback', async (c) => {
+  const authHeader = c.req.header('x-api-key');
+  const body = await c.req.json();
+
+  // Case 1: API Key is missing
+  if (!authHeader) {
+    return c.json({ error: 'API key missing' }, 500);
+  }
+
+  // Case 2: API Key is invalid
+  if (authHeader !== 'mockApiKey') {
+    return c.json({ error: 'Invalid API key' }, 500);
+  }
+
+  // Case 3: Malformed body (missing required fields)
+  const hasRequiredFields =
+    body &&
+    typeof body.feedback === 'object' &&
+    typeof body.feedback.score === 'string' &&
+    typeof body.feedback.comment === 'string';
+
+  if (!hasRequiredFields) {
+    return c.json({ error: 'Malformed feedback body' }, 400);
+  }
+
+  // Case 4: Simulated general error (e.g., internal crash)
+  if (body.feedback.comment.includes('crash')) {
+    return c.json({ error: 'Unexpected server error' }, 500);
+  }
+
+  // Case 5: Happy path
+  return c.json(
+    {
+      feedbackStatus: 'success',
+      message: 'Feedback received for submission',
+    },
+    202
+  );
+});
+
+
+---
+
+How This Matches Ember Behavior
+
+Any non-2xx from Rant & Rave (mock SLAL) will cause Ember to return 500 (as per your service logic).
+
+Validation of incoming Ember /feedback request is done via schema (feedbackApiSchema) and results in 400 from Ember directly.
+
+Secret not loaded in Ember → throws early → 500.
+
+
+
+---
+
+Bonus
+
+In your Ember backend test (Pactum), you can:
+
+Keep the test payload valid.
+
+Change cookie (ck) to load different test user.
+
+Manipulate headers or fields to trigger SLAL mock scenarios.
+
+And ensure Ember responds accordingly with 202, 400, or 500.
+
+
+
+---
+
+Let me know when you're ready and I’ll help you:
+
+Plug this into your mock SLAL Hono route.
+
+Write the corresponding Pactum tests against the Ember /feedback route that exercise all 4-5 conditions.
+
+
+Ready when you are.
+
