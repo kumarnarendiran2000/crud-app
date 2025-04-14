@@ -260,3 +260,68 @@ const response = await fetch(rantAndRaveApiUrl, {
   },
   body: JSON.stringify(rrValidatedFeedback),
 });
+
+
+Great question!
+
+1. Why as unknown as XiorError is used
+
+You're using a plain object to manually mimic the structure of an actual XiorError instance. TypeScript doesn’t allow you to directly cast from a plain object to a class type like XiorError — because it's not technically an instance of that class. So the unknown intermediate cast bypasses that safety check:
+
+const fakeError = { ... } as unknown as XiorError;
+
+This tells TypeScript: “Trust me, this looks like a XiorError even if it's not a real instance.”
+
+
+---
+
+2. Why not use new XiorError(...) like AxiosError
+
+With AxiosError, you can do:
+
+new AxiosError(message, code, config, request, response);
+
+But XiorError doesn't expose a similar public constructor — at least not one with all those arguments.
+
+That’s why:
+
+You can't instantiate it like AxiosError unless XiorError explicitly supports it.
+
+You’d get a TypeScript error or runtime mismatch if the constructor doesn't accept those args.
+
+
+
+---
+
+3. What are your options?
+
+Option A: Fake it (safely, only in test)
+
+const xiorError = {
+  name: 'XiorError',
+  message: 'Xior error',
+  response: {
+    status: 400,
+    data: { error_description: 'Invalid client credentials' },
+  },
+} as unknown as XiorError;
+
+This is totally fine in tests.
+
+Option B: Create a helper createFakeXiorError()
+
+If you use it in multiple places:
+
+function createFakeXiorError(message: string, status: number, description: string): XiorError {
+  return {
+    name: 'XiorError',
+    message,
+    response: {
+      status,
+      data: { error_description: description },
+    },
+  } as unknown as XiorError;
+}
+
+Let me know if you want to try checking the actual constructor signature of XiorError from the xior package, or if you're open to making a custom test utility.
+
