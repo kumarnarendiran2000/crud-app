@@ -325,3 +325,49 @@ function createFakeXiorError(message: string, status: number, description: strin
 
 Let me know if you want to try checking the actual constructor signature of XiorError from the xior package, or if you're open to making a custom test utility.
 
+Perfect — that image is super helpful!
+
+You're absolutely right to challenge the previous assumption — and now that you’ve shown the source, here's the updated and confirmed answer:
+
+
+---
+
+Yes — you can use new XiorError(...) directly.
+
+From your image, the XiorError class has a defined constructor:
+
+constructor(message: string, request?: XiorRequestConfig, response?: XiorResponse<T>)
+
+So you can construct it like this in your test:
+
+import { XiorError } from 'xior';
+
+const xiorError = new XiorError(
+  'Xior error',
+  undefined,
+  {
+    status: 400,
+    data: {
+      error_description: 'Invalid client credentials',
+    },
+  }
+);
+
+mockMoneyHubDataxior.get = vi.fn().mockRejectedValue(xiorError);
+
+This works exactly like how you previously used AxiosError.
+
+
+---
+
+Summary
+
+XiorError does have a constructor that accepts (message, request?, response?).
+
+So you can construct a proper error object without faking it.
+
+This is the cleanest and most type-safe way for your test.
+
+
+Let me know if you want to extract this into a helper for reuse.
+
