@@ -32,3 +32,15 @@ Refactored the env copy script to a shorter, test-specific name for clarity.
 Also updated the E2E documentation under Test Execution Steps to reflect the local build-and-serve flow using this script.
 
 
+Got it! Here’s the revised version in the exact flow you described:
+
+
+---
+
+Alright Sam, got you!
+
+I initially kept the script in place since we’re using the same dashboard build-and-serve flow for local E2E test suite runs as well — not just in CI. As it’s relevant locally too, I’ve updated our E2E suite documentation — specifically the Test Execution Steps section — to reflect this.
+Here’s the link: [insert link]
+
+Also, as suggested, I’ve renamed the script to keep it short and make its test-specific purpose clearer. Let me know if anything else needs to be tweaked!
+
