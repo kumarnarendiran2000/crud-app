@@ -354,3 +354,17 @@ If it starts working, then it's 100% a schema/header mismatch.
 
 Would you like me to rewrite your header schema and test headers to match exactly?
 
+vi.mock('@/lambdaContext', () => ({
+  SECRETS: {
+    rantAndRave: {
+      rantAndRaveUsername: 'mockUser',
+      rantAndRavePassword: 'mockPwd',
+      rantAndRaveApiKey: 'mockApiKey',
+    },
+    raindropPensionFinder: undefined,
+    moneyHub: undefined,
+  },
+  LAST_REFRESH: { secrets: 'mocked' },
+  LIVE_SINCE: new Date(),
+  CONFIG: new (class MockConfig {})(),
+}));
