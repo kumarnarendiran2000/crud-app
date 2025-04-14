@@ -113,3 +113,137 @@ Write the corresponding Pactum tests against the Ember /feedback route that exer
 
 Ready when you are.
 
+Perfect! Based on your clarified flow, here's how we'll structure your Pactum integration tests for the Ember /feedback POST route. This assumes:
+
+Ember backend talks to Rant & Rave, which is now mocked via Mock SLAL server.
+
+Feedback is posted to Ember and then passed downstream to Rant & Rave.
+
+We're testing Ember's behavior (status codes and body) based on different Mock SLAL responses.
+
+In positive case, we spy and ensure Rant & Rave was called with correct body.
+
+
+
+---
+
+✅ 1. Valid Feedback Submission (Happy Path)
+
+import { spec } from 'pactum';
+import { describe, it, vi, expect, beforeEach, afterEach } from 'vitest';
+import axios from 'axios';
+import { apiTest } from '../../../fixture';
+
+describe('POST /feedback', () => {
+  const feedbackRequest = {
+    comment: '#test Hello from Ember',
+    starRating: 5,
+    surveyCaptureType: 'EmberDashboard',
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.spyOn(axios, 'post').mockResolvedValue({ status: 200, data: {} });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  apiTest('should submit valid feedback successfully', async ({ baseUrl }) => {
+    await spec()
+      .post(`${baseUrl}/secure/api/feedback`)
+      .withCookies('ck', '970205143728')
+      .withHeaders({
+        'content-type': 'application/json',
+        accept: 'application/json',
+      })
+      .withBody(feedbackRequest)
+      .expectStatus(202)
+      .expectJsonLike({ message: 'Feedback received for submission' });
+
+    // Assert Rant & Rave was called with expected body (simplified)
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/mock-rant-rave-feedback'), // configured mock SLAL route
+      expect.objectContaining({
+        feedback: expect.any(String),
+        comment: expect.any(String),
+        source: 'Online',
+      }),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'x-api-key': expect.any(String),
+        }),
+      })
+    );
+  });
+});
+
+
+---
+
+❌ 2. Secrets Missing in Lambda Context
+
+This case simulates when secrets (e.g. rantAndRave) are undefined.
+
+apiTest('should fail when secrets are missing', async ({ baseUrl }) => {
+  process.env.RANT_AND_RAVE_SECRET = ''; // or clear mock secrets if used
+
+  await spec()
+    .post(`${baseUrl}/secure/api/feedback`)
+    .withCookies('ck', '970205143728')
+    .withHeaders({ 'content-type': 'application/json' })
+    .withBody({
+      comment: '#test Hello from Ember',
+      starRating: 5,
+      surveyCaptureType: 'EmberDashboard',
+    })
+    .expectStatus(500)
+    .expectBodyContains('Unable to submit feedback, missing secrets');
+});
+
+
+---
+
+❌ 3. Rant & Rave API Key Invalid (simulate 403 from Mock SLAL)
+
+apiTest('should fail when Rant & Rave API key is invalid', async ({ baseUrl }) => {
+  vi.spyOn(axios, 'post').mockRejectedValue({ response: { status: 403, data: 'Forbidden' } });
+
+  await spec()
+    .post(`${baseUrl}/secure/api/feedback`)
+    .withCookies('ck', '970205143728')
+    .withHeaders({ 'content-type': 'application/json' })
+    .withBody({
+      comment: '#test Hello from Ember',
+      starRating: 5,
+      surveyCaptureType: 'EmberDashboard',
+    })
+    .expectStatus(500)
+    .expectBodyContains('Internal Server Error');
+});
+
+
+---
+
+❌ 4. Invalid Request Body (Missing comment)
+
+This fails on Zod validation and returns 400.
+
+apiTest('should fail with 400 for invalid feedback body', async ({ baseUrl }) => {
+  await spec()
+    .post(`${baseUrl}/secure/api/feedback`)
+    .withCookies('ck', '970205143728')
+    .withHeaders({ 'content-type': 'application/json' })
+    .withBody({
+      starRating: 5,
+      surveyCaptureType: 'EmberDashboard',
+    }) // no comment
+    .expectStatus(400);
+});
+
+
+---
+
+Let me know if you want to dynamically validate full mock payload using Zod schema as well, or test mobile platform conditions. Want me to add those too?
+
