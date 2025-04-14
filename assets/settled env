@@ -22,4 +22,13 @@ pnpm serve apps/dashboard/dist -l 8081
 ---
 
 Let me know when you need a follow-up comment for the PR or reviewer response!
+Absolutely! Here's the additional line you can append to the end of your PR description to reflect this update:
+
+
+---
+
+Update:
+Refactored the env copy script to a shorter, test-specific name for clarity.
+Also updated the E2E documentation under Test Execution Steps to reflect the local build-and-serve flow using this script.
+
 
