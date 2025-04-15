@@ -60,3 +60,16 @@ Fix it by comparing with Object.fromEntries([...params.entries()].sort())
 
 Let me know if you want me to refactor your whole test block with this helper included!
 
+Here’s a professional and clear comment you can add to dismiss the CodeQL alert:
+
+
+---
+
+Reason for dismissal:
+The flagged string "invalid-mock-access-token" is used only within a unit test (createUser.test.ts) to simulate an invalid token scenario. It is not part of the production code, and does not represent a real credential or secret. This mock value is intentional and safe for test coverage purposes.
+
+
+---
+
+Let me know if you want a more casual or stricter version!
+
