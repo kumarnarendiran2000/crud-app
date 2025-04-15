@@ -1,0 +1,4 @@
+mockXiorAdapter.onPost(/.*/).reply((config) => {
+  console.log('Intercepted URL:', config.url);
+  return [200, { userId: 'mock-id' }];
+});
