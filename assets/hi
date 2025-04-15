@@ -2,3 +2,61 @@ mockXiorAdapter.onPost(/.*/).reply((config) => {
   console.log('Intercepted URL:', config.url);
   return [200, { userId: 'mock-id' }];
 });
+
+
+Yes — great observation!
+
+You're absolutely right: even though both URLSearchParams instances contain the same keys and values, the .toString() output differs because order matters in a query string.
+
+
+---
+
+Here's what's going on:
+
+new URLSearchParams({ b: '2', a: '1' }).toString()
+// → 'b=2&a=1'
+
+new URLSearchParams({ a: '1', b: '2' }).toString()
+// → 'a=1&b=2'
+
+So .toString() fails if keys are not in the exact same order, even if they're logically equivalent.
+
+
+---
+
+✅ The fix: Compare as unordered key-value pairs
+
+Use this utility:
+
+const paramsToObject = (params: URLSearchParams) =>
+  Object.fromEntries([...params.entries()].sort());
+
+Then compare like this:
+
+expect(
+  paramsToObject(mockXiorAdapter.history.post?.[0].data)
+).toMatchObject(
+  paramsToObject(mockRequestParams)
+);
+
+This will:
+
+Convert both to plain objects
+
+Sort keys alphabetically
+
+Make the comparison order-insensitive but value-aware
+
+
+
+---
+
+TL;DR
+
+.toString() fails because URLSearchParams is order-sensitive
+
+Fix it by comparing with Object.fromEntries([...params.entries()].sort())
+
+
+Let me know if you want me to refactor your whole test block with this helper included!
+
