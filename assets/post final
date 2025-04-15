@@ -371,3 +371,58 @@ This is the cleanest and most type-safe way for your test.
 
 Let me know if you want to extract this into a helper for reuse.
 
+To mimic your local environment variables setup (as shown in your images: System Environment Variables in Windows), the best and most accurate way in GitHub Actions is:
+
+
+---
+
+✅ Use env: block inside the job (Recommended for parity with local system env)
+
+This method mimics your Windows system environment variables because:
+
+They are available to all processes in the step, just like in your local environment.
+
+Your Node.js backend can read them directly using process.env.SECRETS_RANTANDRAVE.
+
+
+Example:
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    env:
+      SECRETS_RANTANDRAVE: '{"rantAndRaveUsername":"mockUser","rantAndRavePassword":"mockPwd","rantAndRaveApiKey":"mockApiKey"}'
+      SECRETS_MONEYHUB: '{"moneyHubClientId":"someClientId"}'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run Mock SLAL & Backend
+        run: |
+          pnpm --filter back-end serve:mock &
+          pnpm --filter mock-legacy-slal-api serve:local &
+
+      - name: Run Integration Tests
+        run: pnpm --filter @test/api-integration test
+
+
+---
+
+Why this is better than echo >> $GITHUB_ENV?
+
+$GITHUB_ENV sets temporary environment variables for the remainder of the job — still works, but behaves more like runtime exports.
+
+The env: block reflects actual system env variables, just like what your app expects locally.
+
+
+
+---
+
+So if your local code uses process.env.SECRETS_RANTANDRAVE directly, then go with the env: block for 100% parity with local behavior.
+
+Let me know if you want me to drop this directly into your ci-pipeline.yml.
+
