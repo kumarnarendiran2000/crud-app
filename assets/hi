@@ -205,3 +205,22 @@ A third PR was also merged to update the E2E pipeline, which depended on the abo
 
 Everything is now in place and the suite runs green locally and in CI.
 
+Got it! Here's the improved version that reflects both the reasoning — solving the issue and moving to a more suitable library:
+
+
+---
+
+Updated Description (Jira Ticket):
+
+Update:
+The root cause was identified to be with Axios, specifically how it handles multiple set-cookie headers post-build due to internal adapter behavior. This issue has already been reported in the Axios repository and a fix exists, but it has not yet been released. Since patching Axios is not feasible in our codebase, the behavior was analyzed and discussed enough within the team.
+
+It was collectively agreed to replace Axios with Xior across the entire backend codebase. This change was made not only to address the current response header issue observed in AWS builds, but also to adopt a lightweight, modern alternative that better aligns with our backend environment and avoids unnecessary browser-oriented behavior.
+
+As part of this ticket, Axios has been refactored to Xior in the entire backend package.
+
+
+---
+
+Let me know if you'd like a one-liner commit message based on this too.
+
