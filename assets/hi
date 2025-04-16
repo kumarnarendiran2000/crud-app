@@ -118,3 +118,46 @@ This keeps the speed optimization for regular runs but ensures manual runs donâ€
 
 Let me know if you want it in a more spoken-style version for a call or standup!
 
+Perfect! Here's a clean breakdown for your two PRs with short and crisp titles, commit messages, and descriptions:
+
+
+---
+
+PR 1: Mock SLAL Server Changes
+
+Title: Add Rant & Rave mock feedback route to SLAL server
+
+Commit Message: add mock /feedback route in mock slal server for Rant & Rave
+
+PR Description:
+
+Introduced /feedback route in mock SLAL server to simulate Rant & Rave API
+
+Used for testing integration of Ember feedback flow
+
+
+
+
+---
+
+PR 2: Integration Test & Config Updates
+
+Title: Add Rant & Rave feedback integration test and CI support
+
+Commit Message: add integration test and CI secrets config for Rant & Rave feedback flow
+
+PR Description:
+
+Added integration test for /feedback endpoint covering all response scenarios
+
+Updated mock API config to route Rant & Rave URL to mock SLAL
+
+Added secrets for Rant & Rave to CI environment
+
+
+
+
+---
+
+Let me know if you'd like to split the second PR even further or add Jira tags, etc.
+
