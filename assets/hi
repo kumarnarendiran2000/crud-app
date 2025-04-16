@@ -224,3 +224,19 @@ As part of this ticket, Axios has been refactored to Xior in the entire backend 
 
 Let me know if you'd like a one-liner commit message based on this too.
 
+Here’s the refined version of your full comment with smooth flow and clear phrasing:
+
+
+---
+
+Comment:
+
+The ticket description has been updated under the “Update” section to reflect the approach taken and the work done as part of this ticket.
+
+The main Axios-to-Xior refactor across all backend areas, along with most of the test updates, was done earlier by @Sundar. I’ve picked it up from there, addressed the remaining test cases, and opened the PR for peer review. It’s currently under review, and we’ll proceed to merge once the changes are reviewed and approved.
+
+
+---
+
+Let me know if you want a more informal or shorter version too.
+
