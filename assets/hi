@@ -161,3 +161,27 @@ Added secrets for Rant & Rave to CI environment
 
 Let me know if you'd like to split the second PR even further or add Jira tags, etc.
 
+Here’s a polished version of both the Jira ticket description update and the status comment you can use:
+
+
+---
+
+Updated Description (Jira Ticket):
+
+Update:
+The root cause was identified to be with Axios, specifically how it handles multiple set-cookie headers post-build due to internal adapter behavior. This issue has already been reported and a fix exists in Axios, but it hasn't been released yet. Since patching Axios is not an option in our codebase, the agreed solution after analysis was to replace Axios with Xior.
+
+As part of this ticket, Axios has been refactored and replaced with Xior in the affected modules to resolve the response manipulation issue in AWS builds.
+
+
+---
+
+Status Comment:
+
+Main chunk of the Axios-to-Xior refactor was completed by @<colleague_username> before going on leave. I’ve now addressed the remaining test case fixes and opened the PR for peer review. It's currently under review and will be merged once the changes are approved.
+
+
+---
+
+Let me know if you want to mention the PR link or ticket ID explicitly too.
+
