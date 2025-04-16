@@ -90,3 +90,31 @@ Thank you!
 
 Let me know if you'd like any other tweaks.
 
+Here’s a clear and concise way you can explain the issue to your team:
+
+
+---
+
+Issue Summary:
+
+Recently, we introduced selective linting using turbo run lint --filter=[$BASE_REF] to speed up CI runs by only linting changed packages. This works well for PRs and push events where BASE_REF is available.
+
+However, during manual workflow_dispatch runs (i.e., when triggered from GitHub UI), there is no base_ref available, which causes Turbo to throw an error:
+Error: invalid git range selector.
+
+Root Cause: Turbo needs a valid git base reference to compare changes. In workflow_dispatch, BASE_REF is undefined, resulting in the invalid filter.
+
+Fix Applied: We’ve now added a fallback in the linting step:
+
+If BASE_REF exists (like in PRs), we do selective linting.
+
+If not (manual dispatch), we fallback to linting all packages.
+
+
+This keeps the speed optimization for regular runs but ensures manual runs don’t break.
+
+
+---
+
+Let me know if you want it in a more spoken-style version for a call or standup!
+
