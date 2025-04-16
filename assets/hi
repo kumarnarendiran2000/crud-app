@@ -185,3 +185,23 @@ Main chunk of the Axios-to-Xior refactor was completed by @<colleague_username> 
 
 Let me know if you want to mention the PR link or ticket ID explicitly too.
 
+Here’s a short and clear comment you can drop on the Jira ticket:
+
+
+---
+
+All required changes are now complete, approved, and merged to main.
+
+This work was split across two PRs:
+
+1. Environment refactor – simplified env handling using .env.development and .env.production, added .env.test support for E2E dashboard builds.
+
+
+2. E2E test suite alignment – updated test cases to reflect the latest dashboard UI and flows.
+
+
+
+A third PR was also merged to update the E2E pipeline, which depended on the above changes to build and serve the dashboard with correct env overrides.
+
+Everything is now in place and the suite runs green locally and in CI.
+
