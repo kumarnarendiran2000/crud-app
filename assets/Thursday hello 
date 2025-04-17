@@ -82,3 +82,20 @@ Supporting screenshots (if any) are attached.
 
 Let me know if you want a formatted PDF/Markdown version of this or if you're uploading screenshots and want them labeled.
 
+Got it! Here’s a refined, short-and-sweet version of the ticket:
+
+
+---
+
+Title: Align extendSession and other app.get routes with app.all route structure
+
+Description:
+The extendSession route currently uses app.get with c.body(...), while the app.all handler and other routes use c.json(...).
+This ticket is to evaluate and refactor all app.get routes, including extendSession, to ensure they follow a consistent structure and ideally consolidate under the app.all dynamic handler where possible.
+
+
+---
+
+Want a version that includes example routes or leave it high-level like this?
+
+
