@@ -277,3 +277,37 @@ Updated e2e-test job condition to include this check
 
 Let me know if you want this with comments or need to also update your PR title and commit message.
 
+Perfect! Based on your current PR and the new script-based logic you’re pushing, here’s the updated PR description you can use:
+
+
+---
+
+Description
+
+Refactored the E2E pipeline to avoid unnecessary test runs and align with GitHub action usage restrictions.
+
+What’s Changed
+
+Removed use of dorny/paths-filter@v2 as it's not permitted by our GitHub org policy.
+
+Added a lightweight inline script using git diff to detect changes under apps/dashboard/** relative to origin/main.
+
+Set output (dashboard-changed) based on this script and used it to gate the E2E test job.
+
+e2e-test job now runs only when:
+
+The PR is approved and includes dashboard changes, or
+
+Triggered via workflow_dispatch or scheduled job.
+
+
+
+Why
+
+This keeps the pipeline focused and optimized — only testing when relevant changes are detected — while remaining compatible with CI policy.
+
+
+---
+
+Let me know if you also want a short comment to notify reviewers of the update.
+
