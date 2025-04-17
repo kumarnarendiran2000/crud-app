@@ -171,3 +171,24 @@ refactor(ci): run E2E pipeline only for dashboard changes or manual/scheduled tr
 
 Let me know if you want a follow-up Jira comment or PR tag suggestion!
 
+Sure! Here's a short and sweet PR description:
+
+
+---
+
+Description
+
+Refactored the E2E pipeline to run only when:
+
+A PR is approved and includes changes under apps/dashboard/**
+
+Or triggered manually or on a schedule
+
+
+Used dorny/paths-filter to detect relevant changes and avoid unnecessary E2E runs.
+
+
+---
+
+Let me know if you need a Jira comment too!
+
