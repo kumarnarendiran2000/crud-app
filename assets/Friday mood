@@ -192,3 +192,88 @@ Used dorny/paths-filter to detect relevant changes and avoid unnecessary E2E run
 
 Let me know if you need a Jira comment too!
 
+Here's a clean and complete refactor of your GitHub Actions workflow to replace dorny/paths-filter@v2 with an inline shell script, since third-party actions like dorny aren't allowed in your enterprise setup.
+
+
+---
+
+What we're replacing
+
+You're removing this:
+
+jobs:
+  filter:
+    runs-on: ubuntu-latest
+    outputs:
+      dashboard: ${{ steps.filter.outputs.dashboard }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            dashboard:
+              - 'apps/dashboard/**'
+
+
+---
+
+Refactored Inline Version
+
+Replace it with this (drop-in replacement):
+
+jobs:
+  check-dashboard-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      dashboard-changed: ${{ steps.set-output.outputs.dashboard_changed }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect dashboard changes
+        id: set-output
+        run: |
+          echo "dashboard_changed=false" >> $GITHUB_OUTPUT
+          git fetch origin main
+          if git diff --name-only origin/main...HEAD | grep '^apps/dashboard/'; then
+            echo "dashboard_changed=true" >> $GITHUB_OUTPUT
+          fi
+
+
+---
+
+Update your e2e-test job to depend on the above:
+
+e2e-test:
+    needs: check-dashboard-changes
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved' &&
+        needs.check-dashboard-changes.outputs.dashboard-changed == 'true'
+      )
+    runs-on: ubuntu-latest
+    steps:
+      # ... your test steps ...
+
+
+---
+
+✅ Summary of changes:
+
+Removed dorny/paths-filter@v2
+
+Added a custom check-dashboard-changes job that uses git diff to detect changes in apps/dashboard/
+
+Passed output as dashboard-changed
+
+Updated e2e-test job condition to include this check
+
+
+Let me know if you want this with comments or need to also update your PR title and commit message.
+
