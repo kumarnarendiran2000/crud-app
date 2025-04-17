@@ -1,0 +1,82 @@
+Thanks for the clarity! Based on your exact requirements, here is the most accurate and maintainable approach:
+
+
+---
+
+Your Goal Recap:
+
+You want the E2E pipeline to run on PR approval (pull_request_review).
+
+But only if the PR includes changes under apps/dashboard/**.
+
+Also support workflow_dispatch (manual run) and schedule (nightly).
+
+Avoid running for unrelated PRs (e.g., backend-only changes).
+
+
+
+---
+
+✅ Recommended Solution: Use dorny/paths-filter
+
+This is the cleanest and most flexible approach for your case.
+
+
+---
+
+1. Install dorny/paths-filter step early in the pipeline:
+
+Add this job before e2e-test, name it filter:
+
+jobs:
+  filter:
+    runs-on: ubuntu-latest
+    outputs:
+      dashboard: ${{ steps.filter.outputs.dashboard }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            dashboard:
+              - 'apps/dashboard/**'
+
+
+---
+
+2. Use the output of that filter to conditionally run e2e-test:
+
+Update your existing e2e-test job like this:
+
+e2e-test:
+    needs: filter
+    if: needs.filter.outputs.dashboard == 'true' &&
+        (github.event_name != 'pull_request_review' || github.event.review.state == 'approved')
+    runs-on: ubuntu-latest
+    steps:
+      # your existing e2e-test steps here...
+
+
+---
+
+✅ This does exactly what you want:
+
+Only runs E2E job if:
+
+PR includes dashboard changes
+
+and PR was approved
+
+
+Also supports workflow_dispatch and schedule without changes.
+
+Keeps your job fast and minimal for unrelated PRs.
+
+
+
+---
+
+Let me know if you want help updating your YAML – I can rewrite the block fully if needed.
+
