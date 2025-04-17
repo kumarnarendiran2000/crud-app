@@ -80,3 +80,55 @@ Keeps your job fast and minimal for unrelated PRs.
 
 Let me know if you want help updating your YAML – I can rewrite the block fully if needed.
 
+Great question! If you’re using dorny/paths-filter and want scheduled or manual (workflow_dispatch) runs to always trigger, you can tweak the condition to support both.
+
+
+---
+
+Here’s how to make it work for all 3 cases:
+
+if: |
+  github.event_name == 'workflow_dispatch' ||
+  github.event_name == 'schedule' ||
+  (
+    needs.filter.outputs.dashboard == 'true' &&
+    github.event_name == 'pull_request_review' &&
+    github.event.review.state == 'approved'
+  )
+
+Explanation:
+
+✅ workflow_dispatch: Always allowed
+
+✅ schedule: Always allowed
+
+✅ pull_request_review: Only runs if:
+
+The PR includes dashboard changes (apps/dashboard/**)
+
+And the review state is approved
+
+
+
+
+---
+
+So your job block will look like:
+
+jobs:
+  e2e-test:
+    needs: filter
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (
+        needs.filter.outputs.dashboard == 'true' &&
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved'
+      )
+    runs-on: ubuntu-latest
+    steps:
+      # your existing e2e test steps here...
+
+This gives you maximum flexibility without unnecessary runs. Want me to update your full YAML?
+
