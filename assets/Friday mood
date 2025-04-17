@@ -132,3 +132,42 @@ jobs:
 
 This gives you maximum flexibility without unnecessary runs. Want me to update your full YAML?
 
+Absolutely! Here's a clean and professional set for your PR:
+
+
+---
+
+PR Title
+
+refactor(ci): optimize E2E pipeline to run only on relevant dashboard changes
+
+
+---
+
+PR Description
+
+### Summary
+Refactored the E2E pipeline to prevent unnecessary test runs on unrelated PRs.
+
+### Key Changes
+- Introduced `dorny/paths-filter` to detect changes specifically under `apps/dashboard/**`
+- Added a `filter` job to expose change detection via `dashboard` output
+- Updated the `e2e-test` job to run only when:
+  - The PR is approved **and** includes dashboard-related changes
+  - Or the workflow is triggered manually (`workflow_dispatch`)
+  - Or it’s a scheduled job (`schedule`)
+
+### Result
+The E2E pipeline is now more efficient, skipping runs for backend or unrelated PRs while still allowing manual and scheduled triggers.
+
+Let me know if you'd like to apply similar logic to other packages!
+
+
+---
+
+Commit Message
+
+refactor(ci): run E2E pipeline only for dashboard changes or manual/scheduled triggers
+
+Let me know if you want a follow-up Jira comment or PR tag suggestion!
+
