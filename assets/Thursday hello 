@@ -55,3 +55,30 @@ Both are currently under peer review. Will mark the ticket as Done once reviews 
 
 Let me know if you want to shorten or tweak tone!
 
+Got it! Here’s a clean and minimal version in your preferred natural flow — perfect to paste into a document or attach to the Jira ticket:
+
+
+---
+
+Test Evidence for Ticket: EMBER-832
+
+Things Tested:
+
+Verified all backend APIs manually by hitting them from the browser — all responses are coming correctly and without errors.
+
+Confirmed that the dashboard is loading as expected and the data is reflecting properly from the backend.
+
+Additionally, all backend test suites in CI are passing successfully (unit, integration, and contract tests).
+
+
+Environment: dev1
+Tested By: Narendra Kumar
+Date: 17-Apr-2025
+
+Supporting screenshots (if any) are attached.
+
+
+---
+
+Let me know if you want a formatted PDF/Markdown version of this or if you're uploading screenshots and want them labeled.
+
