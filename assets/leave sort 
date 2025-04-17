@@ -1,0 +1,61 @@
+Perfect — here's how you can modify your POST /api/v1/feedback route to match the new logic:
+
+
+---
+
+Updated Route (with full control checks and proper status codes):
+
+app.post('/api/v1/feedback', async (c) => {
+  const authHeader = c.req.header('x-api-key');
+  const body = await c.req.json();
+
+  const { rantAndRaveUsername, rantAndRavePassword } = body;
+
+  // 403 for missing or incorrect API key
+  if (!authHeader || authHeader !== 'mockApiKey') {
+    return c.json({ error: 'Forbidden: Invalid API key' }, 403);
+  }
+
+  // 403 for missing or incorrect username/password
+  if (
+    !rantAndRaveUsername || rantAndRaveUsername !== 'mockUser' ||
+    !rantAndRavePassword || rantAndRavePassword !== 'mockPwd'
+  ) {
+    return c.json({ error: 'Forbidden: Invalid credentials' }, 403);
+  }
+
+  // 400 for malformed feedback
+  if (!body.feedback || typeof body.feedback.comment !== 'string') {
+    return c.json({ error: 'Malformed request body' }, 400);
+  }
+
+  // Optional: Simulate 500 by keyword
+  if (body.feedback.comment.includes('crash')) {
+    return c.json({ error: 'Simulated server error' }, 500);
+  }
+
+  // Simulate success response as real Rant & Rave
+  return c.json({
+    uuid: 'fd842f679-3594-484c-b5d9-87bd8d7a8dc7',
+  }, 200);
+});
+
+
+---
+
+Explanation:
+
+Returns 403 for both:
+
+Missing/wrong x-api-key
+
+Missing/wrong username or password (from body)
+
+
+Uses 200 and realistic UUID on success
+
+Keeps 500 simulation if comment contains "crash"
+
+
+Let me know if you want to centralize the secrets or UUID in a config/mock fixture!
+
