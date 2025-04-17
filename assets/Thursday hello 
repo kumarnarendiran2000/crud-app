@@ -1,0 +1,57 @@
+Got it! Here's a simplified and clean version of your description + two structured comments:
+
+
+---
+
+Updated Ticket Description
+
+Add integration tests for the Feedback API (/secure/api/feedback) in Ember backend.
+Tests should cover all response scenarios.
+CI workflow must pass with environment variables properly configured.
+
+
+---
+
+Comment 1 — Work Explanation
+
+Implemented integration tests for the Feedback API. Since the endpoint communicates with a third-party Rant & Rave service (which lacks a test env), we mocked the API using our local SLAL server.
+
+Key changes made:
+
+Created mock route in SLAL to mimic various Rant & Rave responses (200, 400, 500)
+
+Configured api.config.json to point Ember to mock SLAL for local/test env
+
+Updated CI pipeline to load required secrets via system environment variables (SECRETS_RANTANDRAVE)
+
+Wrote Pactum-based integration tests to validate:
+
+202 for valid feedback submission
+
+400 for schema validation failures
+
+500 for internal error simulation
+
+
+
+
+---
+
+Comment 2 — Status Update
+
+Two PRs have been raised:
+
+1. Mock SLAL route and config setup
+
+
+2. Integration test and CI pipeline updates
+
+
+
+Both are currently under peer review. Will mark the ticket as Done once reviews are complete and changes are merged.
+
+
+---
+
+Let me know if you want to shorten or tweak tone!
+
